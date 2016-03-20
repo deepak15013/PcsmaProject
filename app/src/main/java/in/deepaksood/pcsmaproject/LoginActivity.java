@@ -237,10 +237,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             GoogleSignInAccount acct = result.getSignInAccount();
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             updateUI(true);
+            startMainActivity();
         } else {
             // Signed out, show unauthenticated UI.
             updateUI(false);
         }
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void updateUI(boolean signedIn) {
