@@ -96,12 +96,28 @@
 
             </RelativeLayout>
 
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                android:text="@string/com_facebook_loginview_log_in_button"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="sign_in_status"
+                android:text="google_sign_in_status"
                 android:layout_gravity="center"
                 android:id="@+id/sign_in_status"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/info"
+                android:text="facebook_info"
+                android:layout_gravity="center"/>
 
 
 

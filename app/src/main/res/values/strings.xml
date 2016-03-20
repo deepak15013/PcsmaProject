@@ -17,4 +17,6 @@
     <string name="signed_out">Signed out</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
+
+    <string name="facebook_app_id">540211979437359</string>
 </resources>
