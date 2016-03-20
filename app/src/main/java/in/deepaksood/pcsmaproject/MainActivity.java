@@ -12,9 +12,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private String displayName="";
+    private String displayEmailId="";
+    private String photoUrl="";
+
+    TextView viewDisplayName;
+    TextView viewEmailId;
+
+    ImageView displayPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +53,20 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+        viewDisplayName = (TextView) header.findViewById(R.id.displayName);
+        viewEmailId = (TextView) header.findViewById(R.id.displayEmailId);
+        displayPic = (ImageView) header.findViewById(R.id.displayPic);
+
+        Bundle bundle = getIntent().getExtras();
+        displayName = bundle.getString("DISPLAY_NAME");
+        viewDisplayName.setText(displayName);
+
+        displayEmailId = bundle.getString("DISPLAY_EMAIL_ID");
+        viewEmailId.setText(displayEmailId);
+
+        photoUrl = bundle.getString("PHOTO_URL");
+        Picasso.with(this).load(photoUrl).into(displayPic);
     }
 
     @Override

@@ -98,6 +98,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private LoginButton loginButton;
     private CallbackManager callbackManager;
 
+    private String displayName="";
+    private String displayEmailId="";
+    private String photoUrl="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -236,6 +240,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+            displayName = acct.getDisplayName();
+            displayEmailId = acct.getEmail();
+            photoUrl = acct.getPhotoUrl().toString();
             updateUI(true);
             startMainActivity();
         } else {
@@ -246,6 +253,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("DISPLAY_NAME",displayName);
+        bundle.putString("DISPLAY_EMAIL_ID",displayEmailId);
+        bundle.putString("PHOTO_URL",photoUrl);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 
