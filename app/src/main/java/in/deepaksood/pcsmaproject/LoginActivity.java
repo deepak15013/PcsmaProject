@@ -46,8 +46,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 
 import java.security.MessageDigest;
@@ -56,6 +58,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facebook.FacebookSdk;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -101,6 +105,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private String displayName="";
     private String displayEmailId="";
     private String photoUrl="";
+    private String coverUrl="https://drive.google.com/uc?id=0B1jHFoEHN0zfek43ajZrMDZSSms";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +127,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 "Auth Token: "
                                 + loginResult.getAccessToken().getToken()
                 );
+
+                startMainActivity();
 
             }
 
@@ -181,6 +188,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.PROFILE))
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
+                .requestProfile()
                 .requestEmail()
                 .build();
         // Build a GoogleApiClient with access to the Google Sign-In API and the
@@ -188,6 +198,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(Plus.API)
                 .build();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -195,7 +206,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mStatusTextView = (TextView) findViewById(R.id.sign_in_status);
 
+
     }
+
+
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -239,10 +253,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             displayName = acct.getDisplayName();
             displayEmailId = acct.getEmail();
             photoUrl = acct.getPhotoUrl().toString();
+
+
+            if(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                Person person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+
+                Person.Cover.CoverPhoto coverPhoto = null;
+                if(person.getCover() != null) {
+                        coverPhoto = person.getCover().getCoverPhoto();
+                        coverUrl = coverPhoto.getUrl().toString();
+                }
+                else {
+                    coverUrl = "https://drive.google.com/uc?id=0B1jHFoEHN0zfek43ajZrMDZSSms";
+                }
+
+            }
             updateUI(true);
             startMainActivity();
         } else {
@@ -257,6 +285,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         bundle.putString("DISPLAY_NAME",displayName);
         bundle.putString("DISPLAY_EMAIL_ID",displayEmailId);
         bundle.putString("PHOTO_URL",photoUrl);
+        bundle.putString("COVER_URL",coverUrl);
         intent.putExtras(bundle);
         startActivity(intent);
     }

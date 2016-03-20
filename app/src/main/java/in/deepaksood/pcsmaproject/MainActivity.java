@@ -1,8 +1,13 @@
 package in.deepaksood.pcsmaproject;
 
+import android.annotation.TargetApi;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -20,15 +26,20 @@ import com.squareup.picasso.Picasso;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static String TAG = MainActivity.class.getSimpleName();
+
     private String displayName="";
     private String displayEmailId="";
     private String photoUrl="";
+    private String coverUrl="";
 
     TextView viewDisplayName;
     TextView viewEmailId;
 
     ImageView displayPic;
+    ImageView coverPic;
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +68,7 @@ public class MainActivity extends AppCompatActivity
         viewDisplayName = (TextView) header.findViewById(R.id.displayName);
         viewEmailId = (TextView) header.findViewById(R.id.displayEmailId);
         displayPic = (ImageView) header.findViewById(R.id.displayPic);
+        coverPic = (ImageView) header.findViewById(R.id.coverPic);
 
         Bundle bundle = getIntent().getExtras();
         displayName = bundle.getString("DISPLAY_NAME");
@@ -66,7 +78,18 @@ public class MainActivity extends AppCompatActivity
         viewEmailId.setText(displayEmailId);
 
         photoUrl = bundle.getString("PHOTO_URL");
-        Picasso.with(this).load(photoUrl).into(displayPic);
+        if(!photoUrl.contentEquals(""))
+            Picasso.with(this).load(photoUrl).into(displayPic);
+
+
+        coverUrl = bundle.getString("COVER_URL");
+        TextView textView = (TextView) findViewById(R.id.url);
+        textView.setText(coverUrl);
+
+        if(coverUrl != null)
+            Picasso.with(this).load(coverUrl).fit().centerCrop().into(coverPic);
+
+
     }
 
     @Override
