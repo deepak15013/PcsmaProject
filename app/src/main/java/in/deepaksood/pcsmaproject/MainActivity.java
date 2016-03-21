@@ -1,10 +1,12 @@
 package in.deepaksood.pcsmaproject;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,7 +18,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity
@@ -44,13 +49,21 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();*/
+                    IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+                    intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                    intentIntegrator.setBarcodeImageEnabled(true);
+                    intentIntegrator.setCaptureActivity(CaptureActivityAnyOrientation.class);
+                    intentIntegrator.setOrientationLocked(true);
+                    intentIntegrator.initiateScan();
+                }
+            });
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -58,33 +71,34 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View header=navigationView.getHeaderView(0);
-        viewDisplayName = (TextView) header.findViewById(R.id.displayName);
-        viewEmailId = (TextView) header.findViewById(R.id.displayEmailId);
-        displayPic = (ImageView) header.findViewById(R.id.displayPic);
-        coverPic = (ImageView) header.findViewById(R.id.coverPic);
+        displayNavigationBarDetails();
 
-        Bundle bundle = getIntent().getExtras();
-        displayName = bundle.getString("DISPLAY_NAME");
-        viewDisplayName.setText(displayName);
+    }
 
-        displayEmailId = bundle.getString("DISPLAY_EMAIL_ID");
-        viewEmailId.setText(displayEmailId);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(intentResult != null) {
+            String scanFormat = intentResult.getFormatName();
+            String scanContent = intentResult.getContents();
+            String imagePath = intentResult.getBarcodeImagePath();
 
-        photoUrl = bundle.getString("PHOTO_URL");
-        if(!photoUrl.contentEquals(""))
-            Picasso.with(this).load(photoUrl).into(displayPic);
+            Log.v(TAG,"scanFormat: "+scanFormat);
+            Log.v(TAG,"scanContent: "+scanContent);
+            Log.v(TAG,"imagePath: "+imagePath);
 
+            Intent intent = new Intent(MainActivity.this,AddBook.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("SCAN_FORMAT",scanFormat);
+            bundle.putString("SCAN_CONTENT",scanContent);
+            bundle.putString("IMAGE_PATH",imagePath);
+            intent.putExtras(bundle);
+            startActivity(intent);
 
-        coverUrl = bundle.getString("COVER_URL");
-        TextView textView = (TextView) findViewById(R.id.url);
-        textView.setText(coverUrl);
-
-        if(coverUrl != null)
-            Picasso.with(this).load(coverUrl).fit().centerCrop().into(coverPic);
-
+        }
+        else {
+            Toast.makeText(MainActivity.this, "No Scan Data Received", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -142,5 +156,31 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void displayNavigationBarDetails() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+        viewDisplayName = (TextView) header.findViewById(R.id.displayName);
+        viewEmailId = (TextView) header.findViewById(R.id.displayEmailId);
+        displayPic = (ImageView) header.findViewById(R.id.displayPic);
+        coverPic = (ImageView) header.findViewById(R.id.coverPic);
+
+        Bundle bundle = getIntent().getExtras();
+        displayName = bundle.getString("DISPLAY_NAME");
+        viewDisplayName.setText(displayName);
+
+        displayEmailId = bundle.getString("DISPLAY_EMAIL_ID");
+        viewEmailId.setText(displayEmailId);
+
+        photoUrl = bundle.getString("PHOTO_URL");
+        if(!photoUrl.contentEquals(""))
+            Picasso.with(this).load(photoUrl).into(displayPic);
+
+
+        coverUrl = bundle.getString("COVER_URL");
+        if(coverUrl != null)
+            Picasso.with(this).load(coverUrl).fit().centerCrop().into(coverPic);
     }
 }
