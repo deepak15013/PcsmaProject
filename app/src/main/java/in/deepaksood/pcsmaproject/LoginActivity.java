@@ -38,6 +38,9 @@ import android.widget.Toast;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -60,6 +63,9 @@ import java.util.List;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -110,6 +116,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_login);
@@ -117,18 +124,54 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         info = (TextView)findViewById(R.id.info);
         loginButton = (LoginButton)findViewById(R.id.login_button);
 
+        loginButton.setReadPermissions("public_profile email");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                info.setText(
-                        "User ID: "
-                                + loginResult.getAccessToken().getUserId()
-                                + "\n" +
-                                "Auth Token: "
-                                + loginResult.getAccessToken().getToken()
-                );
 
-                startMainActivity();
+                final GraphRequest graphRequest = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+
+                                Profile profile = Profile.getCurrentProfile();
+                                if(profile != null) {
+                                    photoUrl = profile.getProfilePictureUri(300,300).toString();
+                                }
+
+                                JSONObject json = response.getJSONObject();
+                                try {
+                                    if(json != null){
+                                        displayName = json.getString("name");
+                                        displayEmailId = json.getString("email");
+
+                                        String cover = json.getString("cover");
+                                        JSONObject jsonCover = new JSONObject(cover);
+                                        coverUrl = jsonCover.getString("source");
+
+                                        /*String picture = json.getString("picture");
+                                        JSONObject jsonPicture = new JSONObject(picture);
+                                        String pictureData = jsonPicture.getString("data");
+                                        JSONObject jsonPictureUrl = new JSONObject(pictureData);
+                                        photoUrl = jsonPictureUrl.getString("url");*/
+
+                                        startMainActivity();
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                );
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,link,email,picture,cover");
+                graphRequest.setParameters(parameters);
+                graphRequest.executeAsync();
+
+
+
 
             }
 
