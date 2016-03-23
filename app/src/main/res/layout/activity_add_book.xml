@@ -9,31 +9,59 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Scan Format"
-            android:id="@+id/scanFormat" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="80dp"
+                android:minHeight="80dp"
+                android:id="@+id/scanImage" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Scan Content"
-            android:id="@+id/scanContent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Scan Format"
+                android:paddingLeft="20dp"
+                android:layout_toRightOf="@+id/scanImage"
+                android:id="@+id/scanFormat" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="150dp"
-            android:minHeight="150dp"
-            android:id="@+id/scanImage" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Scan Content"
+                android:paddingLeft="20dp"
+                android:id="@+id/scanContent"
+                android:layout_toRightOf="@+id/scanImage"
+                android:layout_below="@+id/scanFormat"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scan Time"
+                android:paddingLeft="20dp"
+                android:id="@+id/scanTime"
+                android:layout_toRightOf="@+id/scanImage"
+                android:layout_below="@+id/scanContent"/>
+
+
+        </RelativeLayout>
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="result"
             android:id="@+id/result" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="amazon Result"
+            android:id="@+id/awsResult"/>
     </LinearLayout>
 </ScrollView>
