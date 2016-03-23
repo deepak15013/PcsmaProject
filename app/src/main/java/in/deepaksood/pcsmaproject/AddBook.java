@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,16 +20,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -41,13 +47,20 @@ public class AddBook extends AppCompatActivity {
     private TextView textScanContent;
     private ImageView scanImage;
     private TextView textscanTime;
-    private TextView result;
-    private TextView awsResult;
 
     private String url = "";
     private String scanFormat;
     private String scanContent;
     private String imagePath;
+
+    private ImageView bookPoster;
+    private TextView title;
+    private TextView author;
+    private TextView publisher;
+    private TextView publicationDate;
+    private TextView binding;
+    private TextView productDescription;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +71,15 @@ public class AddBook extends AppCompatActivity {
         textScanContent = (TextView) findViewById(R.id.scanContent);
         scanImage = (ImageView) findViewById(R.id.scanImage);
         textscanTime = (TextView) findViewById(R.id.scanTime);
-        result = (TextView) findViewById(R.id.result);
-        awsResult = (TextView) findViewById(R.id.awsResult);
+
+        bookPoster = (ImageView) findViewById(R.id.bookPoster);
+        title = (TextView) findViewById(R.id.title);
+        author = (TextView) findViewById(R.id.author);
+        publisher = (TextView) findViewById(R.id.publisher);
+        publicationDate = (TextView) findViewById(R.id.publicationDate);
+        binding = (TextView) findViewById(R.id.binding);
+        productDescription = (TextView) findViewById(R.id.productDescription);
+
 
         Bundle bundle = getIntent().getExtras();
         scanFormat = bundle.getString("SCAN_FORMAT");
@@ -89,6 +109,7 @@ public class AddBook extends AppCompatActivity {
 
             //googleBookSearch();
             amazonBookSearch();
+
         }
         else {
             Toast.makeText(AddBook.this, "Please Scan a ISBN Book to get Book details", Toast.LENGTH_SHORT).show();
@@ -111,7 +132,7 @@ public class AddBook extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.v(TAG,"response: "+response);
-                        result.setText(response);
+//                        result.setText(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -138,6 +159,7 @@ public class AddBook extends AppCompatActivity {
         String amazonUrl = signedRequestHelperAWS.sign(map);
         Log.v(TAG,"amazonUrl: "+amazonUrl);
 
+
         // Instantiate the RequestQueue.
         RequestQueue awsQueue = Volley.newRequestQueue(this);
         StringRequest awsStringRequest = new StringRequest(Request.Method.GET, amazonUrl,
@@ -146,8 +168,7 @@ public class AddBook extends AppCompatActivity {
                     public void onResponse(String response) {
                         if(response != null) {
                             Log.v(TAG,"awsResponse: "+response);
-                            awsResult.setText(response);
-                            //parseData(response);
+                            parseAmazonData(response);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -159,31 +180,21 @@ public class AddBook extends AppCompatActivity {
         awsQueue.add(awsStringRequest);
     }
 
-    public void parseData(String response) {
+    public void parseAmazonData(String response) {
 
-        try {
-            XmlPullParser xmlPullParser = Xml.newPullParser();
-            xmlPullParser.setInput(new StringReader(response));
-            int eventType = xmlPullParser.getEventType();
+        List<ItemObject> items = null;
 
-            while(eventType != XmlPullParser.END_DOCUMENT) {
-                String name = xmlPullParser.getName();
-                switch (eventType) {
-                    case XmlPullParser.START_TAG:
-                        if(name.equalsIgnoreCase("Title")) {
+        XMLPullParserHandler xmlPullParserHandler = new XMLPullParserHandler();
+        items = xmlPullParserHandler.parse(response);
 
-                            break;
-                        }
-                    case XmlPullParser.TEXT: {
-                            String temp = xmlPullParser.getText();
-                            Log.v(TAG,"temp: "+temp);
-                            break;
-                        }
-                }
-            }
+        title.setText(items.get(0).getTitle());
+        author.setText(items.get(0).getAuthor());
+        publisher.setText(items.get(0).getPublisher());
+        publicationDate.setText(items.get(0).getPublicationDate());
+        binding.setText(items.get(0).getBinding());
+        productDescription.setText(items.get(0).getProductDescription());
 
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        }
+        Picasso.with(this).load(items.get(0).getMediumImageUrl()).into(bookPoster);
+
     }
 }
