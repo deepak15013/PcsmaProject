@@ -63,6 +63,7 @@ import java.util.List;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+import com.parse.Parse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,6 +78,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final String TAG = LoginActivity.class.getSimpleName();
 
     private static final int RC_SIGN_IN = 9001;
+
+    private static String PARSE_APPLICATION_ID="pfuT7c39Q9Latnroh9pbMOVX6hJjE5VRYhy9FbU2";
+    private static String PARSE_CLIENT_KEY="rqGDJQ512O8MojOEjir3nmjuCuu8GrkBbLa6YImi";
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -248,6 +252,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         findViewById(R.id.sign_out_button).setOnClickListener(this);
 
         mStatusTextView = (TextView) findViewById(R.id.sign_in_status);
+
+        try {
+            Parse.initialize(this, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(LoginActivity.this, "parse initialization error. Restart the app", Toast.LENGTH_SHORT).show();
+        }
 
 
     }

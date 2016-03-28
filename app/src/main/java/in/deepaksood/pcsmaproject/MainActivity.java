@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.parse.Parse;
+import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity
             bundle.putString("SCAN_FORMAT",scanFormat);
             bundle.putString("SCAN_CONTENT",scanContent);
             bundle.putString("IMAGE_PATH",imagePath);
+            bundle.putString("EMAIL_ID",displayEmailId);
             intent.putExtras(bundle);
             startActivity(intent);
 

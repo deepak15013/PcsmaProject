@@ -1,5 +1,6 @@
 package in.deepaksood.pcsmaproject;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -8,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -52,6 +56,7 @@ public class AddBook extends AppCompatActivity {
     private String scanFormat;
     private String scanContent;
     private String imagePath;
+    private String emailId="";
 
     private ImageView bookPoster;
     private TextView title;
@@ -60,6 +65,8 @@ public class AddBook extends AppCompatActivity {
     private TextView publicationDate;
     private TextView binding;
     private TextView productDescription;
+    
+    private Button addBookButton;
 
 
     @Override
@@ -79,12 +86,15 @@ public class AddBook extends AppCompatActivity {
         publicationDate = (TextView) findViewById(R.id.publicationDate);
         binding = (TextView) findViewById(R.id.binding);
         productDescription = (TextView) findViewById(R.id.productDescription);
+        
+        addBookButton = (Button) findViewById(R.id.addBook); 
 
 
         Bundle bundle = getIntent().getExtras();
         scanFormat = bundle.getString("SCAN_FORMAT");
         scanContent = bundle.getString("SCAN_CONTENT");
         imagePath = bundle.getString("IMAGE_PATH");
+        emailId = bundle.getString("EMAIL_ID");
 
         String timestamp = null;
         Calendar cal = Calendar.getInstance();
@@ -114,6 +124,23 @@ public class AddBook extends AppCompatActivity {
         else {
             Toast.makeText(AddBook.this, "Please Scan a ISBN Book to get Book details", Toast.LENGTH_SHORT).show();
         }
+        
+        addBookButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Log.v(TAG,"title: "+title.getText());
+                if(! title.getText().toString().equalsIgnoreCase("Title")) {
+                    saveBookData();
+                }
+                else {
+                    Toast.makeText(AddBook.this, "Please scan a correct book", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+        
 
     }
 
@@ -196,5 +223,19 @@ public class AddBook extends AppCompatActivity {
 
         Picasso.with(this).load(items.get(0).getMediumImageUrl()).into(bookPoster);
 
+    }
+
+    public void saveBookData() {
+        Toast.makeText(AddBook.this, "Add this book", Toast.LENGTH_SHORT).show();
+
+        emailId = emailId.replaceAll("@","");
+        emailId = emailId.replaceAll("\\.","");
+        Log.v(TAG,"newEmail: "+emailId);
+
+        ParseObject testObject = new ParseObject(emailId);
+        testObject.put("isbn",scanContent);
+        testObject.put("title", title.getText());
+        testObject.put("author",author.getText());
+        testObject.saveInBackground();
     }
 }
