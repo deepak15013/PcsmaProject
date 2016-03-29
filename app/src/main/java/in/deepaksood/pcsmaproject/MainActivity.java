@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,6 +26,10 @@ import com.google.zxing.integration.android.IntentResult;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
+
+import in.deepaksood.pcsmaproject.navigationdrawer.AddBookFragment;
+import in.deepaksood.pcsmaproject.navigationdrawer.MyCollection;
+import in.deepaksood.pcsmaproject.navigationdrawer.SearchBook;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -72,7 +78,9 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+
         displayNavigationBarDetails();
+        displayView(R.id.nav_my_collection);
 
     }
 
@@ -129,6 +137,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toast.makeText(MainActivity.this, "Settings Coming Soon", Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -141,23 +150,79 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        displayView(id);
 
-        } else if (id == R.id.nav_slideshow) {
+        /*if (id == R.id.nav_my_collection) {
+            //Show Book Collection
+            Toast.makeText(MainActivity.this, "my_collection", Toast.LENGTH_SHORT).show();
 
-        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_search_book) {
+            //Search a book by isbn or title
+            Toast.makeText(MainActivity.this, "Search book", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.nav_add_book) {
+            //Add book by isbn or scanning
+            Toast.makeText(MainActivity.this, "add book", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.nav_log_out) {
+            //Log_out
+            Toast.makeText(MainActivity.this, "log_out", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_share) {
+            //Share this app
+            Toast.makeText(MainActivity.this, "Share this app", Toast.LENGTH_SHORT).show();
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_contact_us) {
+            //Contact Us
+            Toast.makeText(MainActivity.this, "contact us", Toast.LENGTH_SHORT).show();
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void displayView(int viewId) {
+        Fragment fragment = null;
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        switch (viewId) {
+            case R.id.nav_my_collection:
+                Toast.makeText(MainActivity.this, "nav_my_collection", Toast.LENGTH_SHORT).show();
+                fragment = new MyCollection();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
+                break;
+
+            case R.id.nav_search_book:
+                Toast.makeText(MainActivity.this, "nav_search_book", Toast.LENGTH_SHORT).show();
+                fragment = new SearchBook();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
+                break;
+
+            case R.id.nav_add_book:
+                Toast.makeText(MainActivity.this, "nav_add_book", Toast.LENGTH_SHORT).show();
+                fragment = new AddBookFragment();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
+                break;
+
+            case R.id.nav_log_out:
+                Toast.makeText(MainActivity.this, "Log_out", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_share:
+                Toast.makeText(MainActivity.this, "nav_share", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.nav_contact_us:
+                Toast.makeText(MainActivity.this, "nav_contact_us", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     public void displayNavigationBarDetails() {
