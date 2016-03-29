@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -132,6 +133,7 @@ public class AddBook extends AppCompatActivity {
                 Log.v(TAG,"title: "+title.getText());
                 if(! title.getText().toString().equalsIgnoreCase("Title")) {
                     saveBookData();
+                    finish();
                 }
                 else {
                     Toast.makeText(AddBook.this, "Please scan a correct book", Toast.LENGTH_SHORT).show();
@@ -226,7 +228,9 @@ public class AddBook extends AppCompatActivity {
     }
 
     public void saveBookData() {
-        Toast.makeText(AddBook.this, "Add this book", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(AddBook.this, "Book Added", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER,0,0);
+        toast.show();
 
         emailId = emailId.replaceAll("@","");
         emailId = emailId.replaceAll("\\.","");
