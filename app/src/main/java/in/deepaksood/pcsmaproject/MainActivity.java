@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.parse.Parse;
 import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 
@@ -40,6 +39,8 @@ public class MainActivity extends AppCompatActivity
     private String displayEmailId="";
     private String photoUrl="";
     private String coverUrl="";
+
+    private String contactNum="";
 
     TextView viewDisplayName;
     TextView viewEmailId;
@@ -152,33 +153,6 @@ public class MainActivity extends AppCompatActivity
 
         displayView(id);
 
-        /*if (id == R.id.nav_my_collection) {
-            //Show Book Collection
-            Toast.makeText(MainActivity.this, "my_collection", Toast.LENGTH_SHORT).show();
-
-
-        } else if (id == R.id.nav_search_book) {
-            //Search a book by isbn or title
-            Toast.makeText(MainActivity.this, "Search book", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_add_book) {
-            //Add book by isbn or scanning
-            Toast.makeText(MainActivity.this, "add book", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_log_out) {
-            //Log_out
-            Toast.makeText(MainActivity.this, "log_out", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_share) {
-            //Share this app
-            Toast.makeText(MainActivity.this, "Share this app", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_contact_us) {
-            //Contact Us
-            Toast.makeText(MainActivity.this, "contact us", Toast.LENGTH_SHORT).show();
-
-        }*/
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -209,6 +183,10 @@ public class MainActivity extends AppCompatActivity
                 fragment = new AddBookFragment();
                 ft.replace(R.id.content_frame, fragment);
                 ft.commit();
+                break;
+
+            case R.id.nav_contacts:
+                Toast.makeText(MainActivity.this, "My contacts", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.nav_log_out:
@@ -249,5 +227,9 @@ public class MainActivity extends AppCompatActivity
         coverUrl = bundle.getString("COVER_URL");
         if(coverUrl != null)
             Picasso.with(this).load(coverUrl).fit().centerCrop().into(coverPic);
+
+        contactNum = bundle.getString("CONTACT_NUM");
+        Log.v(TAG,"contact_num: "+contactNum);
     }
+
 }

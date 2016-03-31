@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         JSONObject jsonPictureUrl = new JSONObject(pictureData);
                                         photoUrl = jsonPictureUrl.getString("url");*/
 
-                                        startMainActivity();
+                                        startLoginActivity();
                                     }
 
                                 } catch (JSONException e) {
@@ -277,15 +277,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             }
             updateUI(true);
-            startMainActivity();
+            startLoginActivity();
         } else {
             // Signed out, show unauthenticated UI.
             updateUI(false);
         }
     }
 
-    private void startMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, Registration.class);
         Bundle bundle = new Bundle();
         bundle.putString("DISPLAY_NAME",displayName);
         bundle.putString("DISPLAY_EMAIL_ID",displayEmailId);
