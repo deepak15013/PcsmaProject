@@ -27,6 +27,7 @@ import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 
 import in.deepaksood.pcsmaproject.navigationdrawer.AddBookFragment;
+import in.deepaksood.pcsmaproject.navigationdrawer.ContactsFragment;
 import in.deepaksood.pcsmaproject.navigationdrawer.MyCollection;
 import in.deepaksood.pcsmaproject.navigationdrawer.SearchBook;
 
@@ -187,6 +188,9 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_contacts:
                 Toast.makeText(MainActivity.this, "My contacts", Toast.LENGTH_SHORT).show();
+                fragment = new ContactsFragment();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
                 break;
 
             case R.id.nav_log_out:
