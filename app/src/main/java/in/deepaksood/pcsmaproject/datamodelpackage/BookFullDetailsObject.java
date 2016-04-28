@@ -1,9 +1,9 @@
-package in.deepaksood.pcsmaproject;
+package in.deepaksood.pcsmaproject.datamodelpackage;
 
 /**
  * Created by deepak on 23/3/16.
  */
-public class ItemObject {
+public class BookFullDetailsObject {
 
     private String author;
     private String binding;

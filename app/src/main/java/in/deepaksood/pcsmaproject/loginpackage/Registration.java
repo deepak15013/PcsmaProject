@@ -1,11 +1,10 @@
-package in.deepaksood.pcsmaproject;
+package in.deepaksood.pcsmaproject.loginpackage;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,15 +13,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.parse.ParseObject;
+import in.deepaksood.pcsmaproject.mainactivitypackage.MainActivity;
+import in.deepaksood.pcsmaproject.R;
+import in.deepaksood.pcsmaproject.preferencemanagerpackage.PrefManager;
 
 public class Registration extends AppCompatActivity {
 
@@ -32,9 +33,12 @@ public class Registration extends AppCompatActivity {
     EditText contact_num;
     TextView location;
 
-    String name = "";
-    String email = "";
-    String strLocation="";
+    private String userName = "";
+    private String userEmailId = "";
+    private String userLocation="";
+    private String userProfilePictureUrl="";
+    private String userCoverPictureUrl="";
+    private String userContactNum = "";
 
     LocationManager locationManager;
     LocationListener locationListener;
@@ -45,11 +49,6 @@ public class Registration extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle("Registration");
-        }
 
         location = (TextView) findViewById(R.id.location);
         next = (Button) findViewById(R.id.next);
@@ -67,9 +66,9 @@ public class Registration extends AppCompatActivity {
                 double lat = loc.getLatitude();
                 double lon = loc.getLongitude();
 
-                strLocation = lat + "," +lon;
+                userLocation = lat + "," +lon;
 
-                location.setText(strLocation);
+                location.setText(userLocation);
                 progressBar.setVisibility(View.INVISIBLE);
 
             }
@@ -91,20 +90,15 @@ public class Registration extends AppCompatActivity {
         };
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
         Bundle bundle = getIntent().getExtras();
-        name = bundle.getString("DISPLAY_NAME");
-        email = bundle.getString("DISPLAY_EMAIL_ID");
+        userName = bundle.getString("DISPLAY_NAME");
+        userEmailId = bundle.getString("DISPLAY_EMAIL_ID");
+        userProfilePictureUrl = bundle.getString("");
+        userCoverPictureUrl = bundle.getString("");
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -112,15 +106,12 @@ public class Registration extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(location.getText().toString().equalsIgnoreCase("Getting Device Coordinates")) {
-                    Log.v(TAG,"Getting Device Location");
+                    Toast.makeText(Registration.this, "Please Wait Getting Device Location", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     storeUserData();
+
                     Intent intent = new Intent(Registration.this, MainActivity.class);
-                    Bundle send = new Bundle();
-                    send.putString("CONTACT_NUM", contact_num.getText().toString());
-                    intent.putExtras(getIntent());
-                    intent.putExtras(send);
                     startActivity(intent);
                 }
             }
@@ -130,24 +121,16 @@ public class Registration extends AppCompatActivity {
     }
 
     public void storeUserData() {
-        ParseObject testObject = new ParseObject("user_table");
-        testObject.put("name", name);
-        testObject.put("contact_num", contact_num.getText().toString());
-        testObject.put("email_id", email);
-        testObject.put("location",strLocation);
-        testObject.saveInBackground();
+        userContactNum = contact_num.getText().toString();
+
+        PrefManager prefManager = new PrefManager(this);
+        prefManager.saveUserData(userName, userEmailId, userProfilePictureUrl, userCoverPictureUrl, userContactNum, userLocation);
+        prefManager.createLogin();
     }
 
     @Override
     protected void onPause() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         locationManager.removeUpdates(locationListener);

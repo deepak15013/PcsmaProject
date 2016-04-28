@@ -1,4 +1,4 @@
-package in.deepaksood.pcsmaproject;
+package in.deepaksood.pcsmaproject.mainactivitypackage;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -23,9 +23,11 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 
+import in.deepaksood.pcsmaproject.bookaddpackage.AddBook;
+import in.deepaksood.pcsmaproject.bookaddpackage.CaptureActivityAnyOrientation;
+import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.navigationdrawer.AddBookFragment;
 import in.deepaksood.pcsmaproject.navigationdrawer.ContactsFragment;
 import in.deepaksood.pcsmaproject.navigationdrawer.MyCollection;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity
     private static String TAG = MainActivity.class.getSimpleName();
 
     private String displayName="";
-    private String displayEmailId="";
+    public String displayEmailId="";
     private String photoUrl="";
     private String coverUrl="";
 

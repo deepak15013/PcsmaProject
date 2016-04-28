@@ -1,6 +1,4 @@
-package in.deepaksood.pcsmaproject;
-
-import android.util.Log;
+package in.deepaksood.pcsmaproject.bookaddpackage;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -11,6 +9,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import in.deepaksood.pcsmaproject.datamodelpackage.BookFullDetailsObject;
+
 /**
  * Created by deepak on 23/3/16.
  */
@@ -18,19 +18,19 @@ public class XMLPullParserHandler {
 
     private final static String TAG = XMLPullParserHandler.class.getSimpleName();
 
-    List<ItemObject> items;
-    private ItemObject item;
+    List<BookFullDetailsObject> items;
+    private BookFullDetailsObject item;
     private String text;
 
     public XMLPullParserHandler() {
         items = new ArrayList<>();
     }
 
-    public List<ItemObject> getItems() {
+    public List<BookFullDetailsObject> getItems() {
         return items;
     }
 
-    public List<ItemObject> parse(String response) {
+    public List<BookFullDetailsObject> parse(String response) {
 
         boolean flagForProductDescription = false;
 
@@ -50,7 +50,7 @@ public class XMLPullParserHandler {
                 switch (eventType) {
                     case XmlPullParser.START_TAG:
                         if (tagName.equalsIgnoreCase("item")) {
-                            item = new ItemObject();
+                            item = new BookFullDetailsObject();
                         }
                         else if(tagName.equalsIgnoreCase("LargeImage")) {
                             String temp="";

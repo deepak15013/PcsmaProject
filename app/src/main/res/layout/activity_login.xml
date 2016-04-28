@@ -4,11 +4,8 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="in.deepaksood.pcsmaproject.LoginActivity">
+    android:background="@color/colorPrimary"
+    tools:context=".loginpackage.LoginActivity">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -16,53 +13,38 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/logo"
+                android:layout_gravity="center_horizontal"/>
 
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginTop="30dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_gravity="center_horizontal"
+                android:text="Please login to continue"
+                android:textColor="#FFFFFF"/>
 
-                <com.google.android.gms.common.SignInButton
-                    android:id="@+id/sign_in_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:visibility="visible"
-                    tools:visibility="visible" />
-
-                <Button
-                    android:id="@+id/sign_out_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="@string/sign_out"
-                    android:visibility="gone"/>
-
-            </RelativeLayout>
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="240dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center_horizontal"
+                android:visibility="visible"
+                tools:visibility="visible" />
 
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/login_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="240dp"
+                android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="30dp"
-                android:text="@string/com_facebook_loginview_log_in_button"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="google_sign_in_status"
-                android:layout_gravity="center"
-                android:id="@+id/sign_in_status"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/info"
-                android:text="facebook_info"
-                android:layout_gravity="center"/>
+                android:text="@string/com_facebook_loginview_log_in_button" />
 
         </LinearLayout>
 </LinearLayout>

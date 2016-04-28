@@ -1,6 +1,5 @@
 package in.deepaksood.pcsmaproject.navigationdrawer;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -9,11 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +24,6 @@ public class MyCollection extends Fragment {
     List<BookDetails> list = new ArrayList<>();
     ListView listView;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -39,7 +32,7 @@ public class MyCollection extends Fragment {
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("My Collection");
 
-        getDataFromParse();
+//        getDataFromParse();
 
         BookDetailsAdapter customAdapter = new BookDetailsAdapter(this.getContext(), (ArrayList<BookDetails>) list);
         listView.setAdapter(customAdapter);
@@ -48,7 +41,7 @@ public class MyCollection extends Fragment {
 
     }
 
-    public void getDataFromParse() {
+    /*public void getDataFromParse() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("deepaksood619gmailcom");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -74,11 +67,11 @@ public class MyCollection extends Fragment {
                 }
             }
         });
-    }
+    }*/
 
-    public void updateUi() {
+    /*public void updateUi() {
         Log.v(TAG,"Update UI");
         BookDetailsAdapter customAdapter = new BookDetailsAdapter(this.getContext(), (ArrayList<BookDetails>) list);
         listView.setAdapter(customAdapter);
-    }
+    }*/
 }

@@ -1,7 +1,4 @@
-package in.deepaksood.pcsmaproject;
-
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+package in.deepaksood.pcsmaproject.bookaddpackage;
 
 import com.journeyapps.barcodescanner.CaptureActivity;
 

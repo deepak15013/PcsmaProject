@@ -1,20 +1,14 @@
-package in.deepaksood.pcsmaproject;
+package in.deepaksood.pcsmaproject.bookaddpackage;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Xml;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,23 +18,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.parse.ParseObject;
 import com.squareup.picasso.Picasso;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import in.deepaksood.pcsmaproject.R;
+import in.deepaksood.pcsmaproject.datamodelpackage.BookFullDetailsObject;
 
 public class AddBook extends AppCompatActivity {
 
@@ -211,7 +201,7 @@ public class AddBook extends AppCompatActivity {
 
     public void parseAmazonData(String response) {
 
-        List<ItemObject> items = null;
+        List<BookFullDetailsObject> items = null;
 
         XMLPullParserHandler xmlPullParserHandler = new XMLPullParserHandler();
         items = xmlPullParserHandler.parse(response);
@@ -236,10 +226,10 @@ public class AddBook extends AppCompatActivity {
         emailId = emailId.replaceAll("\\.","");
         Log.v(TAG,"newEmail: "+emailId);
 
-        ParseObject testObject = new ParseObject(emailId);
+        /*ParseObject testObject = new ParseObject(emailId);
         testObject.put("isbn",scanContent);
         testObject.put("title", title.getText());
         testObject.put("author",author.getText());
-        testObject.saveInBackground();
+        testObject.saveInBackground();*/
     }
 }
