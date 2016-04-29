@@ -5,8 +5,6 @@ import android.util.Log;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBDocument;
 
-import java.io.Serializable;
-
 /**
  * Created by deepak on 29/4/16.
  */
@@ -19,13 +17,15 @@ public class BookObject {
     private String bookName;
     private String bookAuthor;
     private String bookIsbn;
+    private String bookPosterUrl;
 
     public BookObject() {}
 
-    public BookObject(String bookName, String bookAuthor, String bookIsbn) {
+    public BookObject(String bookName, String bookAuthor, String bookIsbn, String bookPosterUrl) {
         this.bookName = bookName;
         this.bookAuthor = bookAuthor;
         this.bookIsbn = bookIsbn;
+        this.bookPosterUrl = bookPosterUrl;
     }
 
     @DynamoDBAttribute(attributeName = "BookName")
@@ -53,6 +53,15 @@ public class BookObject {
 
     public void setBookIsbn(String bookIsbn) {
         this.bookIsbn = bookIsbn;
+    }
+
+    @DynamoDBAttribute(attributeName = "BookPosterUrl")
+    public String getBookPosterUrl() {
+        return bookPosterUrl;
+    }
+
+    public void setBookPosterUrl(String bookPosterUrl) {
+        this.bookPosterUrl = bookPosterUrl;
     }
 
     @Override

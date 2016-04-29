@@ -26,6 +26,12 @@ import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
@@ -42,7 +48,7 @@ import in.deepaksood.pcsmaproject.navigationdrawer.searchbookpackage.SearchBook;
 import in.deepaksood.pcsmaproject.preferencemanagerpackage.PrefManager;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     private static String TAG = MainActivity.class.getSimpleName();
 
@@ -59,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     ImageView coverPic;
     TextView contactNum;
 
-    UserObject userObject;
+    private GoogleApiClient mGoogleApiClient;
 
     public String getUserEmailId() {
         return userEmailId;
@@ -98,6 +104,15 @@ public class MainActivity extends AppCompatActivity
         displayNavigationBarDetails();
         displayView(R.id.nav_my_collection);
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
     }
 
     @Override
@@ -125,6 +140,23 @@ public class MainActivity extends AppCompatActivity
         else {
             Toast.makeText(MainActivity.this, "No Scan Data Received", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v(TAG,"onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v(TAG,"onResume");
+        Fragment fragment = null;
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        fragment = new MyCollection();
+        ft.replace(R.id.content_frame, fragment);
+        ft.commit();
     }
 
     @Override
@@ -209,6 +241,9 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_log_out:
                 Toast.makeText(MainActivity.this, "Log_out", Toast.LENGTH_SHORT).show();
+
+                googleSignOut();
+
                 PrefManager prefManager = new PrefManager(this);
                 prefManager.clearSession();
                 Intent intent = new Intent(this, LoginActivity.class);
@@ -225,6 +260,22 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+    private void googleSignOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Log.v(TAG,"Log out success: "+status);
+                    }
+                });
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Toast.makeText(MainActivity.this, "Error logging out", Toast.LENGTH_SHORT).show();
+    }
+
 
     public void displayNavigationBarDetails() {
 
@@ -252,6 +303,7 @@ public class MainActivity extends AppCompatActivity
         contactNum.setText(userContactNum);
 
     }
+
 
     private class db extends AsyncTask<String, Void, String> {
         @Override

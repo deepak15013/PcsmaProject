@@ -1,5 +1,6 @@
 package in.deepaksood.pcsmaproject.navigationdrawer.mycollectionpackage;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,9 +37,9 @@ public class MyCollection extends Fragment {
     private List<BookObject> bookObjects;
     private RecyclerView rv;
 
-    String emailId;
+    private static String emailId;
 
-    CardViewAdapter adapter;
+    ShowBookAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,20 +66,29 @@ public class MyCollection extends Fragment {
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
-        //initializeAdapter();
-
         return rootView;
 
     }
 
     private class db extends AsyncTask<String, Void, String> {
+
+        Context context;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            context = getActivity().getApplicationContext();
+            if(context == null) {
+                return;
+            }
+        }
+
         @Override
         protected String doInBackground(String... params) {
 
             CognitoCachingCredentialsProvider credentialsProvider;
 
             credentialsProvider = new CognitoCachingCredentialsProvider(
-                    getContext(),
+                    context,
                     "us-east-1:25c78fbe-abb8-4655-9309-8442c610ffd0", // Identity Pool ID
                     Regions.US_EAST_1 // Region
             );
@@ -88,14 +98,10 @@ public class MyCollection extends Fragment {
             DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
 
             if(mapper != null) {
-                Log.v(TAG,"emailId: "+emailId);
-                UserObject userObject = mapper.load(UserObject.class, emailId);
-
-                Log.v(TAG,"user: "+userObject.getUserName());
-                Log.v(TAG,"email: "+userObject.getUserEmailId());
-
-                bookObjects = userObject.getBookObjectSet();
-                Log.v(TAG,"name: "+bookObjects.get(0).getBookName());
+                if(emailId != null) {
+                    UserObject userObject = mapper.load(UserObject.class, emailId);
+                    bookObjects = userObject.getBookObjectSet();
+                }
             }
 
             else
@@ -112,7 +118,7 @@ public class MyCollection extends Fragment {
     }
 
     private void initializeAdapter(){
-        adapter = new CardViewAdapter(bookObjects);
+        adapter = new ShowBookAdapter(bookObjects);
         rv.setAdapter(adapter);
     }
 

@@ -71,6 +71,7 @@ public class AddBook extends AppCompatActivity {
     private String bookName = "";
     private String bookAuthor = "";
     private String bookIsbn = "";
+    private String bookPosterUrl = "";
 
 
     @Override
@@ -187,32 +188,39 @@ public class AddBook extends AppCompatActivity {
 
     public void parseAmazonData(String response) {
 
+        Log.v(TAG,"response of scan: "+response);
+
         List<BookFullDetailsObject> items = null;
 
         XMLPullParserHandler xmlPullParserHandler = new XMLPullParserHandler();
         items = xmlPullParserHandler.parse(response);
 
-        bookName = items.get(0).getTitle();
-        bookAuthor = items.get(0).getAuthor();
+        if(items != null) {
+            try {
+                bookName = items.get(0).getTitle();
+                bookAuthor = items.get(0).getAuthor();
+                bookPosterUrl = items.get(0).getMediumImageUrl();
 
-        title.setText(items.get(0).getTitle());
-        author.setText(items.get(0).getAuthor());
-        publisher.setText(items.get(0).getPublisher());
-        publicationDate.setText(items.get(0).getPublicationDate());
-        binding.setText(items.get(0).getBinding());
-        productDescription.setText(items.get(0).getProductDescription());
+                title.setText(items.get(0).getTitle());
+                author.setText(items.get(0).getAuthor());
+                publisher.setText(items.get(0).getPublisher());
+                publicationDate.setText(items.get(0).getPublicationDate());
+                binding.setText(items.get(0).getBinding());
+                productDescription.setText(items.get(0).getProductDescription());
 
-        Picasso.with(this).load(items.get(0).getMediumImageUrl()).into(bookPoster);
+                Picasso.with(this).load(items.get(0).getMediumImageUrl()).into(bookPoster);
+            } catch (Exception e) {
+                Log.v(TAG,"exception getting book from amazon");
+                Toast.makeText(AddBook.this, "Cannot find the book", Toast.LENGTH_SHORT).show();
+            }
+
+        }
 
     }
 
     BookObject bookObject;
     public void saveBookData() {
-        Toast toast = Toast.makeText(AddBook.this, "Book Added", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER,0,0);
-        toast.show();
-
-        bookObject = new BookObject(bookName, bookAuthor, bookIsbn);
+        bookObject = new BookObject(bookName, bookAuthor, bookIsbn, bookPosterUrl);
         new db().execute();
 
     }
@@ -234,34 +242,36 @@ public class AddBook extends AppCompatActivity {
             DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
 
             if(mapper != null) {
-                Log.v(TAG,"emailId: "+emailId);
                 UserObject userObject = mapper.load(UserObject.class, emailId);
 
-                Log.v(TAG,"user: "+userObject.getUserName());
-                Log.v(TAG,"email: "+userObject.getUserEmailId());
-                Log.v(TAG,"BookName: "+bookObject.getBookName());
-                Log.v(TAG,"bookauth: "+bookObject.getBookAuthor());
-                Log.v(TAG,"bookisbn: "+bookObject.getBookIsbn());
-
-                if(userObject.getBookObjectSet().size() == 0) {
+                if(userObject.getBookObjectSet() != null) {
+                    if(userObject.getBookObjectSet().size() == 0) {
+                        Log.v(TAG,"first book added");
+                        List<BookObject> bookObjectSet = new ArrayList<>();
+                        bookObjectSet.add(bookObject);
+                        userObject.setBookObjectSet(bookObjectSet);
+                        mapper.save(userObject);
+                    }
+                    else {
+                        List<BookObject> bookObjectList = userObject.getBookObjectSet();
+                        Log.v(TAG,"book: "+bookObjectList.get(0).getBookName());
+                        if(bookObjectList.contains(bookObject)) {
+                            Log.v(TAG,"Already Added");
+                        }
+                        else {
+                            Log.v(TAG,"new book added to list");
+                            bookObjectList.add(bookObject);
+                            userObject.setBookObjectSet(bookObjectList);
+                            mapper.save(userObject);
+                        }
+                    }
+                }
+                else {
                     Log.v(TAG,"first book added");
                     List<BookObject> bookObjectSet = new ArrayList<>();
                     bookObjectSet.add(bookObject);
                     userObject.setBookObjectSet(bookObjectSet);
                     mapper.save(userObject);
-                }
-                else {
-                    List<BookObject> bookObjectList = userObject.getBookObjectSet();
-                    Log.v(TAG,"book: "+bookObjectList.get(0).getBookName());
-                    if(bookObjectList.contains(bookObject)) {
-                        Log.v(TAG,"Already Added");
-                    }
-                    else {
-                        Log.v(TAG,"new book added to list");
-                        bookObjectList.add(bookObject);
-                        userObject.setBookObjectSet(bookObjectList);
-                        mapper.save(userObject);
-                    }
                 }
             }
 

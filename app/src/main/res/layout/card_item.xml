@@ -11,33 +11,49 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="8dp">
 
-        <TextView
-            android:id="@+id/tv_cv_book_name"
+        <ImageView
+            android:id="@+id/iv_cv_book_poster"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Book_Name"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:minWidth="60dp"
+            android:minHeight="90dp"
+            android:maxWidth="80dp"
+            android:maxHeight="100dp" />
 
-        <TextView
-            android:id="@+id/tv_cv_book_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginTop="4dp"
-            android:text="Author_Name"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp">
 
-        <TextView
-            android:id="@+id/tv_cv_book_isbn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="4dp"
-            android:text="Book_ISBN"/>
+            <TextView
+                android:id="@+id/tv_cv_book_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Book_Name"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#000000"/>
+
+            <TextView
+                android:id="@+id/tv_cv_book_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_marginTop="4dp"
+                android:text="Author_Name"/>
+
+            <TextView
+                android:id="@+id/tv_cv_book_isbn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Book_ISBN"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
