@@ -2,6 +2,7 @@ package in.deepaksood.pcsmaproject.mainactivitypackage;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +22,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
@@ -28,28 +33,37 @@ import com.squareup.picasso.Picasso;
 import in.deepaksood.pcsmaproject.bookaddpackage.AddBook;
 import in.deepaksood.pcsmaproject.bookaddpackage.CaptureActivityAnyOrientation;
 import in.deepaksood.pcsmaproject.R;
+import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
+import in.deepaksood.pcsmaproject.loginpackage.LoginActivity;
 import in.deepaksood.pcsmaproject.navigationdrawer.AddBookFragment;
 import in.deepaksood.pcsmaproject.navigationdrawer.ContactsFragment;
-import in.deepaksood.pcsmaproject.navigationdrawer.MyCollection;
-import in.deepaksood.pcsmaproject.navigationdrawer.SearchBook;
+import in.deepaksood.pcsmaproject.navigationdrawer.mycollectionpackage.MyCollection;
+import in.deepaksood.pcsmaproject.navigationdrawer.searchbookpackage.SearchBook;
+import in.deepaksood.pcsmaproject.preferencemanagerpackage.PrefManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static String TAG = MainActivity.class.getSimpleName();
 
-    private String displayName="";
-    public String displayEmailId="";
-    private String photoUrl="";
-    private String coverUrl="";
-
-    private String contactNum="";
+    private String userName = "";
+    private String userEmailId = "";
+    private String userProfilePictureUrl = "";
+    private String userCoverPictureUrl = "";
+    private String userContactNum = "";
+    private String userLocation = "";
 
     TextView viewDisplayName;
     TextView viewEmailId;
-
     ImageView displayPic;
     ImageView coverPic;
+    TextView contactNum;
+
+    UserObject userObject;
+
+    public String getUserEmailId() {
+        return userEmailId;
+    }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -64,8 +78,6 @@ public class MainActivity extends AppCompatActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();*/
                     IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
                     intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
                     intentIntegrator.setBarcodeImageEnabled(true);
@@ -105,7 +117,7 @@ public class MainActivity extends AppCompatActivity
             bundle.putString("SCAN_FORMAT",scanFormat);
             bundle.putString("SCAN_CONTENT",scanContent);
             bundle.putString("IMAGE_PATH",imagePath);
-            bundle.putString("EMAIL_ID",displayEmailId);
+            bundle.putString("USER_EMAIL_ID", userEmailId);
             intent.putExtras(bundle);
             startActivity(intent);
 
@@ -197,6 +209,11 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_log_out:
                 Toast.makeText(MainActivity.this, "Log_out", Toast.LENGTH_SHORT).show();
+                PrefManager prefManager = new PrefManager(this);
+                prefManager.clearSession();
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
                 break;
 
             case R.id.nav_share:
@@ -210,6 +227,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void displayNavigationBarDetails() {
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header=navigationView.getHeaderView(0);
@@ -217,25 +235,51 @@ public class MainActivity extends AppCompatActivity
         viewEmailId = (TextView) header.findViewById(R.id.displayEmailId);
         displayPic = (ImageView) header.findViewById(R.id.displayPic);
         coverPic = (ImageView) header.findViewById(R.id.coverPic);
+        contactNum = (TextView) header.findViewById(R.id.tv_nav_header_contact_num);
 
-        Bundle bundle = getIntent().getExtras();
-        displayName = bundle.getString("DISPLAY_NAME");
-        viewDisplayName.setText(displayName);
+        PrefManager prefManager = new PrefManager(this);
+        userName = prefManager.getDisplayName();
+        userEmailId = prefManager.getDisplayEmailId();
+        userProfilePictureUrl = prefManager.getPhotoUrl();
+        userCoverPictureUrl = prefManager.getCoverUrl();
+        userContactNum = prefManager.getMobileNumber();
+        userLocation = prefManager.getLocation();
 
-        displayEmailId = bundle.getString("DISPLAY_EMAIL_ID");
-        viewEmailId.setText(displayEmailId);
+        viewDisplayName.setText(userName);
+        viewEmailId.setText(userEmailId);
+        Picasso.with(this).load(userProfilePictureUrl).into(displayPic);
+        Picasso.with(this).load(userCoverPictureUrl).into(coverPic);
+        contactNum.setText(userContactNum);
 
-        photoUrl = bundle.getString("PHOTO_URL");
-        if(!photoUrl.contentEquals(""))
-            Picasso.with(this).load(photoUrl).into(displayPic);
+    }
 
+    private class db extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
 
-        coverUrl = bundle.getString("COVER_URL");
-        if(coverUrl != null)
-            Picasso.with(this).load(coverUrl).fit().centerCrop().into(coverPic);
+            CognitoCachingCredentialsProvider credentialsProvider;
 
-        contactNum = bundle.getString("CONTACT_NUM");
-        Log.v(TAG,"contact_num: "+contactNum);
+            credentialsProvider = new CognitoCachingCredentialsProvider(
+                    getApplicationContext(),
+                    "us-east-1:25c78fbe-abb8-4655-9309-8442c610ffd0", // Identity Pool ID
+                    Regions.US_EAST_1 // Region
+            );
+
+            AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            if(mapper != null) {
+                UserObject userObject = mapper.load(UserObject.class, userEmailId);
+                Log.v(TAG,"user: "+userObject.getUserName());
+                Log.v(TAG,"email: "+userObject.getUserEmailId());
+            }
+
+            else
+                Log.v(TAG,"not saved");
+
+            return "Executed";
+        }
     }
 
 }

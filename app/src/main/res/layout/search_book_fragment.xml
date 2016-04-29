@@ -1,12 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/colorPrimary">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Search_Book_Fragment"
-        android:id="@+id/textView3" />
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search by ISBN"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_gravity="center_horizontal" />
+
+        <EditText
+            android:id="@+id/et_book_isbn"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:inputType="phone"
+            android:ems="13"
+            android:maxLength="20"
+            android:padding="8dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:hint="ISBN"
+            android:textCursorDrawable="@null"
+            android:textSize="18dp"
+            android:fontFamily="sans-serif-light"/>
+
+        <Button
+            android:id="@+id/btn_search_isbn"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:text="Search by ISBN"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/colorPrimaryDark"
+            android:layout_marginTop="15dp"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#FFFFFF"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search by Author"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_gravity="center_horizontal" />
+
+        <EditText
+            android:id="@+id/et_book_author"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:inputType="textAutoComplete"
+            android:ems="13"
+            android:padding="8dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:hint="Author"
+            android:textCursorDrawable="@null"
+            android:textSize="18dp"
+            android:fontFamily="sans-serif-light"/>
+
+        <Button
+            android:id="@+id/btn_search_author"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:text="Search by Author"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/colorPrimaryDark"
+            android:layout_marginTop="15dp"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#FFFFFF"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search by Name"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_gravity="center_horizontal" />
+
+        <EditText
+            android:id="@+id/et_book_name"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:inputType="textAutoComplete"
+            android:ems="13"
+            android:padding="8dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:hint="Name"
+            android:textCursorDrawable="@null"
+            android:textSize="18dp"
+            android:fontFamily="sans-serif-light"/>
+
+        <Button
+            android:id="@+id/btn_search_name"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:text="Search by Name"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/colorPrimaryDark"
+            android:layout_marginTop="15dp"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+
+
+
 </LinearLayout>

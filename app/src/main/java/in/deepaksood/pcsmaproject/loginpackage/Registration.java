@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -21,6 +22,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+
+import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
 import in.deepaksood.pcsmaproject.mainactivitypackage.MainActivity;
 import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.preferencemanagerpackage.PrefManager;
@@ -45,10 +52,16 @@ public class Registration extends AppCompatActivity {
 
     ProgressBar progressBar;
 
+    UserObject userObject;
+
+    boolean locationFetched = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
+        Log.v(TAG,"onCreate");
 
         location = (TextView) findViewById(R.id.location);
         next = (Button) findViewById(R.id.next);
@@ -70,6 +83,7 @@ public class Registration extends AppCompatActivity {
 
                 location.setText(userLocation);
                 progressBar.setVisibility(View.INVISIBLE);
+                locationFetched = true;
 
             }
 
@@ -97,32 +111,41 @@ public class Registration extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         userName = bundle.getString("DISPLAY_NAME");
         userEmailId = bundle.getString("DISPLAY_EMAIL_ID");
-        userProfilePictureUrl = bundle.getString("");
-        userCoverPictureUrl = bundle.getString("");
+        userProfilePictureUrl = bundle.getString("PHOTO_URL");
+        userCoverPictureUrl = bundle.getString("COVER_URL");
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(location.getText().toString().equalsIgnoreCase("Getting Device Coordinates")) {
-                    Toast.makeText(Registration.this, "Please Wait Getting Device Location", Toast.LENGTH_SHORT).show();
+                if(locationFetched) {
+                    if(contact_num.getText().toString().matches("[0-9]+") && contact_num.getText().toString().length() == 10) {
+                        userContactNum = contact_num.getText().toString();
+                        storeUserDataDynamoDb();
+                        storePrefManagerData();
+                        Intent intent = new Intent(Registration.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(Registration.this, "Enter a valid Mobile Number", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else {
-                    storeUserData();
-
-                    Intent intent = new Intent(Registration.this, MainActivity.class);
-                    startActivity(intent);
+                    Toast.makeText(Registration.this, "Please Wait Getting Device Location", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
     }
 
-    public void storeUserData() {
-        userContactNum = contact_num.getText().toString();
+    public void storeUserDataDynamoDb() {
+        Log.v(TAG,"StoreUserDataDynamoDb");
+        userObject = new UserObject(userName, userEmailId, userProfilePictureUrl, userCoverPictureUrl, userContactNum, userLocation);
+        new db().execute();
+    }
 
+    public void storePrefManagerData() {
+        Log.v(TAG,"storePrefManagerData");
         PrefManager prefManager = new PrefManager(this);
         prefManager.saveUserData(userName, userEmailId, userProfilePictureUrl, userCoverPictureUrl, userContactNum, userLocation);
         prefManager.createLogin();
@@ -154,4 +177,38 @@ public class Registration extends AppCompatActivity {
         final AlertDialog alert = builder.create();
         alert.show();
     }
+
+    private class db extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+
+            CognitoCachingCredentialsProvider credentialsProvider;
+
+            credentialsProvider = new CognitoCachingCredentialsProvider(
+                    getApplicationContext(),
+                    "us-east-1:25c78fbe-abb8-4655-9309-8442c610ffd0", // Identity Pool ID
+                    Regions.US_EAST_1 // Region
+            );
+
+            AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            if(mapper != null) {
+                mapper.save(userObject);
+                Log.v(TAG,"userName: "+userObject.getUserName());
+                Log.v(TAG,"EmailId "+userObject.getUserEmailId());
+                Log.v(TAG,"ProfilePicture: "+userObject.getUserProfilePictureUrl());
+                Log.v(TAG,"CoverPicture: "+userObject.getUserCoverPictureUrl());
+                Log.v(TAG,"ContactNum: "+userObject.getUserContactNum());
+                Log.v(TAG,"UserLocation: "+userObject.getUserLocation());
+            }
+
+            else
+                Log.v(TAG,"not saved");
+
+            return "Executed";
+        }
+    }
+
 }

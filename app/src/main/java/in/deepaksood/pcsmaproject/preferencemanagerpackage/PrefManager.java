@@ -57,4 +57,28 @@ public class PrefManager {
         return pref.getBoolean(KEY_IS_LOGGED_IN,false);
     }
 
+    public String getDisplayName() {
+        return pref.getString(KEY_DISPLAY_NAME,"Default User");
+    }
+
+    public String getDisplayEmailId() {
+        return pref.getString(KEY_DISPLAY_EMAIL_ID, "default@default.com");
+    }
+
+    public String getPhotoUrl() {
+        return pref.getString(KEY_PHOTO_URL, "https://drive.google.com/uc?id=0B1jHFoEHN0zfNXpHbUI2NTd0a1U");
+    }
+
+    public String getCoverUrl() {
+        return pref.getString(KEY_COVER_URL, "https://drive.google.com/uc?id=0B1jHFoEHN0zfek43ajZrMDZSSms");
+    }
+
+    public String getMobileNumber() {
+        return pref.getString(KEY_USER_CONTACT_NUM,"0123456789");
+    }
+
+    public String getLocation() {
+        return pref.getString(KEY_USER_LOCATION, "");
+    }
+
 }

@@ -2,6 +2,7 @@ package in.deepaksood.pcsmaproject.bookaddpackage;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,14 +28,19 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.datamodelpackage.BookFullDetailsObject;
+import in.deepaksood.pcsmaproject.datamodelpackage.BookObject;
+import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
 
 public class AddBook extends AppCompatActivity {
 
@@ -43,11 +53,10 @@ public class AddBook extends AppCompatActivity {
     private ImageView scanImage;
     private TextView textscanTime;
 
-    private String url = "";
     private String scanFormat;
     private String scanContent;
     private String imagePath;
-    private String emailId="";
+    private String emailId;
 
     private ImageView bookPoster;
     private TextView title;
@@ -58,6 +67,10 @@ public class AddBook extends AppCompatActivity {
     private TextView productDescription;
     
     private Button addBookButton;
+
+    private String bookName = "";
+    private String bookAuthor = "";
+    private String bookIsbn = "";
 
 
     @Override
@@ -85,7 +98,8 @@ public class AddBook extends AppCompatActivity {
         scanFormat = bundle.getString("SCAN_FORMAT");
         scanContent = bundle.getString("SCAN_CONTENT");
         imagePath = bundle.getString("IMAGE_PATH");
-        emailId = bundle.getString("EMAIL_ID");
+        emailId = bundle.getString("USER_EMAIL_ID");
+        bookIsbn = scanContent;
 
         String timestamp = null;
         Calendar cal = Calendar.getInstance();
@@ -107,8 +121,6 @@ public class AddBook extends AppCompatActivity {
         }
 
         if(scanContent != null && scanFormat != null && scanFormat.equalsIgnoreCase("EAN_13")) {
-
-            //googleBookSearch();
             amazonBookSearch();
 
         }
@@ -134,32 +146,6 @@ public class AddBook extends AppCompatActivity {
         });
         
 
-    }
-
-    public void googleBookSearch() {
-        //book Search in google Books
-
-        url = "https://www.googleapis.com/books/v1/volumes?"+
-                "q=isbn:"+scanContent+"&key="+api_key;
-
-        Log.v(TAG,"url: "+url);
-
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.v(TAG,"response: "+response);
-//                        result.setText(response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v(TAG,"Error: "+error);
-            }
-        });
-        queue.add(stringRequest);
     }
 
     public void amazonBookSearch() {
@@ -206,6 +192,9 @@ public class AddBook extends AppCompatActivity {
         XMLPullParserHandler xmlPullParserHandler = new XMLPullParserHandler();
         items = xmlPullParserHandler.parse(response);
 
+        bookName = items.get(0).getTitle();
+        bookAuthor = items.get(0).getAuthor();
+
         title.setText(items.get(0).getTitle());
         author.setText(items.get(0).getAuthor());
         publisher.setText(items.get(0).getPublisher());
@@ -217,19 +206,70 @@ public class AddBook extends AppCompatActivity {
 
     }
 
+    BookObject bookObject;
     public void saveBookData() {
         Toast toast = Toast.makeText(AddBook.this, "Book Added", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER,0,0);
         toast.show();
 
-        emailId = emailId.replaceAll("@","");
-        emailId = emailId.replaceAll("\\.","");
-        Log.v(TAG,"newEmail: "+emailId);
+        bookObject = new BookObject(bookName, bookAuthor, bookIsbn);
+        new db().execute();
 
-        /*ParseObject testObject = new ParseObject(emailId);
-        testObject.put("isbn",scanContent);
-        testObject.put("title", title.getText());
-        testObject.put("author",author.getText());
-        testObject.saveInBackground();*/
     }
+
+    private class db extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+
+            CognitoCachingCredentialsProvider credentialsProvider;
+
+            credentialsProvider = new CognitoCachingCredentialsProvider(
+                    getApplicationContext(),
+                    "us-east-1:25c78fbe-abb8-4655-9309-8442c610ffd0", // Identity Pool ID
+                    Regions.US_EAST_1 // Region
+            );
+
+            AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+
+            DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+
+            if(mapper != null) {
+                Log.v(TAG,"emailId: "+emailId);
+                UserObject userObject = mapper.load(UserObject.class, emailId);
+
+                Log.v(TAG,"user: "+userObject.getUserName());
+                Log.v(TAG,"email: "+userObject.getUserEmailId());
+                Log.v(TAG,"BookName: "+bookObject.getBookName());
+                Log.v(TAG,"bookauth: "+bookObject.getBookAuthor());
+                Log.v(TAG,"bookisbn: "+bookObject.getBookIsbn());
+
+                if(userObject.getBookObjectSet().size() == 0) {
+                    Log.v(TAG,"first book added");
+                    List<BookObject> bookObjectSet = new ArrayList<>();
+                    bookObjectSet.add(bookObject);
+                    userObject.setBookObjectSet(bookObjectSet);
+                    mapper.save(userObject);
+                }
+                else {
+                    List<BookObject> bookObjectList = userObject.getBookObjectSet();
+                    Log.v(TAG,"book: "+bookObjectList.get(0).getBookName());
+                    if(bookObjectList.contains(bookObject)) {
+                        Log.v(TAG,"Already Added");
+                    }
+                    else {
+                        Log.v(TAG,"new book added to list");
+                        bookObjectList.add(bookObject);
+                        userObject.setBookObjectSet(bookObjectList);
+                        mapper.save(userObject);
+                    }
+                }
+            }
+
+            else
+                Log.v(TAG,"not saved");
+
+            return "Executed";
+        }
+    }
+
 }
