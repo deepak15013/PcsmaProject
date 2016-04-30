@@ -126,6 +126,7 @@ public class Registration extends AppCompatActivity {
                         storePrefManagerData();
                         Intent intent = new Intent(Registration.this, MainActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                     else {
                         Toast.makeText(Registration.this, "Enter a valid Mobile Number", Toast.LENGTH_SHORT).show();

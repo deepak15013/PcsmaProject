@@ -23,9 +23,9 @@ import in.deepaksood.pcsmaproject.datamodelpackage.BookObject;
 import in.deepaksood.pcsmaproject.datamodelpackage.CardObject;
 import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
 
-public class ShowBookActivity extends AppCompatActivity {
+public class ShowAllBookActivity extends AppCompatActivity {
 
-    private static final String TAG = ShowBookActivity.class.getSimpleName();
+    private static final String TAG = ShowAllBookActivity.class.getSimpleName();
 
     PaginatedScanList<UserObject> result;
     private List<CardObject> cardObjects;
@@ -90,13 +90,21 @@ public class ShowBookActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            for(UserObject userObject: result) {
-                for(BookObject bookObject: userObject.getBookObjectSet()) {
-                    CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
-                    cardObjects.add(cardObject);
+            Log.v(TAG,"result: "+result);
+
+            try {
+                if(result != null) {
+                    for(UserObject userObject: result) {
+                        for(BookObject bookObject: userObject.getBookObjectSet()) {
+                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
+                            cardObjects.add(cardObject);
+                        }
+                    }
                 }
+                initializeAdapter();
+            } catch (Exception e) {
+                Log.v(TAG,"Exception e: "+e);
             }
-            initializeAdapter();
             Log.v(TAG,"Completed");
         }
     }

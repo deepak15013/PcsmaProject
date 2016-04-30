@@ -27,8 +27,10 @@ import java.util.List;
 
 import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.datamodelpackage.BookObject;
+import in.deepaksood.pcsmaproject.datamodelpackage.CardObject;
 import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
-import in.deepaksood.pcsmaproject.showbookpackage.ShowBookActivity;
+import in.deepaksood.pcsmaproject.showbookpackage.ShowAllBookActivity;
+import in.deepaksood.pcsmaproject.showbookpackage.ShowSelectedBookActivity;
 
 /**
  * Created by deepak on 29/3/16.
@@ -47,30 +49,26 @@ public class SearchBook extends Fragment implements View.OnClickListener{
 
     PaginatedScanList<UserObject> result;
 
-    static List<UserObject> haveBook;
+    static List<CardObject> haveBook;
 
     static List<String> isbnList;
     static List<String> authorList;
     static List<String> nameList;
 
+    private List<CardObject> cardObjects;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new db().execute();
         haveBook = new ArrayList<>();
 
         isbnList = new ArrayList<>();
         authorList = new ArrayList<>();
         nameList = new ArrayList<>();
+        cardObjects = new ArrayList<>();
+        new db().execute();
     }
 
-    public PaginatedScanList<UserObject> getResult() {
-        return result;
-    }
-
-    public void setResult(PaginatedScanList<UserObject> result) {
-        this.result = result;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -104,17 +102,57 @@ public class SearchBook extends Fragment implements View.OnClickListener{
         return rootView;
     }
 
+    Boolean foundBook = false;
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
             case R.id.btn_search:
-                Toast.makeText(getActivity(), "search by author", Toast.LENGTH_SHORT).show();
+                if(etBookIsbn.getText() != null && !etBookIsbn.getText().toString().equals("")) {
+                    Log.v(TAG,"get: "+etBookIsbn.getText());
+                    for(CardObject cardObject: cardObjects) {
+                        if(etBookIsbn.getText().toString().equals(cardObject.getBookIsbn())) {
+                            haveBook.add(cardObject);
+                            foundBook = true;
+                        }
+                    }
+                }
+                if(etBookName.getText() != null && !etBookName.getText().toString().equals("") && !foundBook) {
+                    Log.v(TAG,"getname: "+etBookName.getText().toString());
+                    for(CardObject cardObject: cardObjects) {
+                        if(etBookIsbn.getText().toString().equalsIgnoreCase(cardObject.getBookName())) {
+                            haveBook.add(cardObject);
+                            foundBook = true;
+                        }
+                    }
+                }
+                if(etBookAuthor.getText() != null && !etBookAuthor.getText().toString().equals("") && !foundBook) {
+                    Log.v(TAG,"getauthor: "+etBookAuthor.getText().toString());
+                    for(CardObject cardObject: cardObjects) {
+                        if(etBookAuthor.getText().toString().equalsIgnoreCase(cardObject.getBookAuthor())) {
+                            haveBook.add(cardObject);
+                            foundBook = true;
+                        }
+                    }
+                }
+
+                if(foundBook) {
+                    for(CardObject object : haveBook) {
+                        Log.v(TAG,"have: "+object.getUserEmailId());
+                    }
+                    Intent intent = new Intent(getActivity(), ShowSelectedBookActivity.class);
+                    startActivity(intent);
+
+                }
+                else {
+                    Toast.makeText(getContext(), "No Book Found", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 break;
 
             case R.id.btn_get_all:
                 Toast.makeText(getActivity(), "Get all Books", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(), ShowBookActivity.class);
+                Intent intent = new Intent(getActivity(), ShowAllBookActivity.class);
                 startActivity(intent);
                 break;
 
@@ -152,15 +190,22 @@ public class SearchBook extends Fragment implements View.OnClickListener{
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if(result != null) {
-                for(UserObject userObject: result) {
-                    for(BookObject bookObject: userObject.getBookObjectSet()) {
-                        isbnList.add(bookObject.getBookIsbn());
-                        authorList.add(bookObject.getBookAuthor());
-                        nameList.add(bookObject.getBookName());
+            try {
+                if(result != null) {
+                    for(UserObject userObject: result) {
+                        for(BookObject bookObject: userObject.getBookObjectSet()) {
+                            isbnList.add(bookObject.getBookIsbn());
+                            authorList.add(bookObject.getBookAuthor());
+                            nameList.add(bookObject.getBookName());
+                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
+                            cardObjects.add(cardObject);
+                        }
                     }
                 }
+            } catch (Exception e) {
+                Log.v(TAG,"exception: "+e);
             }
+
 
             Log.v(TAG,"Completed");
         }

@@ -152,11 +152,12 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         Log.v(TAG,"onResume");
-        Fragment fragment = null;
+        displayView(R.id.nav_my_collection);
+        /*Fragment fragment = null;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         fragment = new MyCollection();
         ft.replace(R.id.content_frame, fragment);
-        ft.commit();
+        ft.commit();*/
     }
 
     @Override
