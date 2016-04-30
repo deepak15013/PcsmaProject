@@ -123,7 +123,7 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
                 Log.v(TAG,"mailto: "+cardObjects.get(position).getUserEmailId());
                 shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {cardObjects.get(position).getUserEmailId()});
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "BookXchange: Please help out");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "I want to have "+cardObjects.get(position).getBookName()+" book. Please lend me this book");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "I want to have "+cardObjects.get(position).getBookName()+" book. Please lend me this book.");
                 shareIntent.setType("text/plain");
                 context.startActivity(Intent.createChooser(shareIntent, "Send request with"));
             }

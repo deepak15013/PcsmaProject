@@ -97,12 +97,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         JSONObject jsonCover = new JSONObject(cover);
                                         coverUrl = jsonCover.getString("source");
 
-                                        /*String picture = json.getString("picture");
-                                        JSONObject jsonPicture = new JSONObject(picture);
-                                        String pictureData = jsonPicture.getString("data");
-                                        JSONObject jsonPictureUrl = new JSONObject(pictureData);
-                                        photoUrl = jsonPictureUrl.getString("url");*/
-
                                         startLoginActivity();
                                     }
 

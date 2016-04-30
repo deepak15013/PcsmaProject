@@ -103,6 +103,7 @@ public class MyCollection extends Fragment {
                     userObject = mapper.load(UserObject.class, emailId);
                     Log.v(TAG,"user: "+userObject.getUserName());
                     bookObjects = userObject.getBookObjectSet();
+
                 }
             }
 

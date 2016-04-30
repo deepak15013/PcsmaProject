@@ -2,6 +2,7 @@ package in.deepaksood.pcsmaproject.mainactivitypackage;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,7 +42,6 @@ import in.deepaksood.pcsmaproject.bookaddpackage.CaptureActivityAnyOrientation;
 import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
 import in.deepaksood.pcsmaproject.loginpackage.LoginActivity;
-import in.deepaksood.pcsmaproject.navigationdrawer.AddBookFragment;
 import in.deepaksood.pcsmaproject.navigationdrawer.ContactsFragment;
 import in.deepaksood.pcsmaproject.navigationdrawer.mycollectionpackage.MyCollection;
 import in.deepaksood.pcsmaproject.navigationdrawer.searchbookpackage.SearchBook;
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -84,12 +85,7 @@ public class MainActivity extends AppCompatActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
-                    intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-                    intentIntegrator.setBarcodeImageEnabled(true);
-                    intentIntegrator.setCaptureActivity(CaptureActivityAnyOrientation.class);
-                    intentIntegrator.setOrientationLocked(true);
-                    intentIntegrator.initiateScan();
+                    addBookByScan();
                 }
             });
         }
@@ -113,6 +109,15 @@ public class MainActivity extends AppCompatActivity
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+    }
+
+    public void addBookByScan() {
+        IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+        intentIntegrator.setBarcodeImageEnabled(true);
+        intentIntegrator.setCaptureActivity(CaptureActivityAnyOrientation.class);
+        intentIntegrator.setOrientationLocked(true);
+        intentIntegrator.initiateScan();
     }
 
     @Override
@@ -152,39 +157,31 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         Log.v(TAG,"onResume");
-        displayView(R.id.nav_my_collection);
-        /*Fragment fragment = null;
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        fragment = new MyCollection();
-        ft.replace(R.id.content_frame, fragment);
-        ft.commit();*/
     }
 
     @Override
     public void onBackPressed() {
+        MyCollection myCollection = (MyCollection) getSupportFragmentManager().findFragmentByTag("MYCOLLECTIONFRAGMENT");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if(myCollection != null && myCollection.isVisible()) {
             super.onBackPressed();
+        } else {
+            displayView(R.id.nav_my_collection);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Toast.makeText(MainActivity.this, "Settings Coming Soon", Toast.LENGTH_SHORT).show();
             return true;
@@ -206,37 +203,41 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void displayView(int viewId) {
-        Fragment fragment = null;
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        Log.v(TAG,"onResumeFragements");
+        displayView(R.id.nav_my_collection);
+    }
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    public void displayView(int viewId) {
+
+        Fragment fragment = null;
+        FragmentTransaction ft;
+        ft = getSupportFragmentManager().beginTransaction();
 
         switch (viewId) {
             case R.id.nav_my_collection:
-                Toast.makeText(MainActivity.this, "nav_my_collection", Toast.LENGTH_SHORT).show();
+                Log.v(TAG,"nav_my_collection");
                 fragment = new MyCollection();
-                ft.replace(R.id.content_frame, fragment);
+                ft.replace(R.id.content_frame, fragment, "MYCOLLECTIONFRAGMENT");
                 ft.commit();
                 break;
 
             case R.id.nav_search_book:
-                Toast.makeText(MainActivity.this, "nav_search_book", Toast.LENGTH_SHORT).show();
                 fragment = new SearchBook();
-                ft.replace(R.id.content_frame, fragment);
+                ft.replace(R.id.content_frame, fragment, "SEARCHBOOKFRAGMENT");
                 ft.commit();
                 break;
 
             case R.id.nav_add_book:
-                Toast.makeText(MainActivity.this, "nav_add_book", Toast.LENGTH_SHORT).show();
-                fragment = new AddBookFragment();
-                ft.replace(R.id.content_frame, fragment);
-                ft.commit();
+                addBookByScan();
                 break;
 
             case R.id.nav_contacts:
                 Toast.makeText(MainActivity.this, "My contacts", Toast.LENGTH_SHORT).show();
                 fragment = new ContactsFragment();
-                ft.replace(R.id.content_frame, fragment);
+                ft.replace(R.id.content_frame, fragment, "CONTACTSFRAGMENT");
                 ft.commit();
                 break;
 
@@ -253,11 +254,24 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_share:
-                Toast.makeText(MainActivity.this, "nav_share", Toast.LENGTH_SHORT).show();
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.setData(Uri.parse("mailto:"));
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "HEY CHECK IT OUT");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Hey I got this great app called MUSTER. Great for getting books from other people. Download now from Google Play Store");
+                shareIntent.setType("text/plain");
+                startActivity(Intent.createChooser(shareIntent, "Share with"));
                 break;
 
             case R.id.nav_contact_us:
-                Toast.makeText(MainActivity.this, "nav_contact_us", Toast.LENGTH_SHORT).show();
+                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                sendIntent.setType("plain/text");
+                sendIntent.setData(Uri.parse("deepak15013@iiitd.ac.in"));
+                sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
+                sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "deepak15013@iiitd.ac.in" });
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Write your text here - ");
+                startActivity(sendIntent);
                 break;
         }
     }
@@ -300,7 +314,7 @@ public class MainActivity extends AppCompatActivity
         viewDisplayName.setText(userName);
         viewEmailId.setText(userEmailId);
         Picasso.with(this).load(userProfilePictureUrl).into(displayPic);
-        Picasso.with(this).load(userCoverPictureUrl).into(coverPic);
+        Picasso.with(this).load(userCoverPictureUrl).fit().centerCrop().into(coverPic);
         contactNum.setText(userContactNum);
 
     }

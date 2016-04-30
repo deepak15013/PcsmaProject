@@ -1,5 +1,6 @@
 package in.deepaksood.pcsmaproject.navigationdrawer.searchbookpackage;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,11 +9,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -22,6 +26,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedScanLis
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,6 +104,17 @@ public class SearchBook extends Fragment implements View.OnClickListener{
         etBookName.setThreshold(2);
         etBookName.setAdapter(nameAdapter);
 
+        if(!(rootView instanceof EditText)) {
+              rootView.setOnTouchListener(new View.OnTouchListener() {
+                  @Override
+                  public boolean onTouch(View v, MotionEvent event) {
+                      Activity activity = getActivity();
+                      InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                      inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+                      return false;
+                  }
+              });
+        }
         return rootView;
     }
 
@@ -109,7 +125,6 @@ public class SearchBook extends Fragment implements View.OnClickListener{
 
             case R.id.btn_search:
                 if(etBookIsbn.getText() != null && !etBookIsbn.getText().toString().equals("")) {
-                    Log.v(TAG,"get: "+etBookIsbn.getText());
                     for(CardObject cardObject: cardObjects) {
                         if(etBookIsbn.getText().toString().equals(cardObject.getBookIsbn())) {
                             haveBook.add(cardObject);
@@ -118,16 +133,14 @@ public class SearchBook extends Fragment implements View.OnClickListener{
                     }
                 }
                 if(etBookName.getText() != null && !etBookName.getText().toString().equals("") && !foundBook) {
-                    Log.v(TAG,"getname: "+etBookName.getText().toString());
                     for(CardObject cardObject: cardObjects) {
-                        if(etBookIsbn.getText().toString().equalsIgnoreCase(cardObject.getBookName())) {
+                        if(etBookName.getText().toString().equalsIgnoreCase(cardObject.getBookName())) {
                             haveBook.add(cardObject);
                             foundBook = true;
                         }
                     }
                 }
                 if(etBookAuthor.getText() != null && !etBookAuthor.getText().toString().equals("") && !foundBook) {
-                    Log.v(TAG,"getauthor: "+etBookAuthor.getText().toString());
                     for(CardObject cardObject: cardObjects) {
                         if(etBookAuthor.getText().toString().equalsIgnoreCase(cardObject.getBookAuthor())) {
                             haveBook.add(cardObject);
@@ -141,6 +154,7 @@ public class SearchBook extends Fragment implements View.OnClickListener{
                         Log.v(TAG,"have: "+object.getUserEmailId());
                     }
                     Intent intent = new Intent(getActivity(), ShowSelectedBookActivity.class);
+                    intent.putExtra("HAVE_BOOK",(Serializable) haveBook);
                     startActivity(intent);
 
                 }

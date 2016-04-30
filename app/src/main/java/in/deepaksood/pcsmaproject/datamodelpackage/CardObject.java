@@ -1,9 +1,11 @@
 package in.deepaksood.pcsmaproject.datamodelpackage;
 
+import java.io.Serializable;
+
 /**
  * Created by deepak on 30/4/16.
  */
-public class CardObject {
+public class CardObject implements Serializable{
 
     private String bookName;
     private String bookAuthor;

@@ -8,11 +8,11 @@
             android:title="My Collection" />
         <item
             android:id="@+id/nav_search_book"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_search_black_24px"
             android:title="Search Book" />
         <item
             android:id="@+id/nav_add_book"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_add_black_24dp"
             android:title="Add Book" />
 
         <item
@@ -21,7 +21,7 @@
             android:title="My Contacts" />
         <item
             android:id="@+id/nav_log_out"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_log_out"
             android:title="Log Out" />
     </group>
 
