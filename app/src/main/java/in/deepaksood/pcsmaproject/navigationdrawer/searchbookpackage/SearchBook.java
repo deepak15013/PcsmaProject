@@ -152,16 +152,16 @@ public class SearchBook extends Fragment implements View.OnClickListener{
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            for(UserObject userObject: result) {
-                for(BookObject bookObject: userObject.getBookObjectSet()) {
-                    isbnList.add(bookObject.getBookIsbn());
-                    authorList.add(bookObject.getBookAuthor());
-                    nameList.add(bookObject.getBookName());
+            if(result != null) {
+                for(UserObject userObject: result) {
+                    for(BookObject bookObject: userObject.getBookObjectSet()) {
+                        isbnList.add(bookObject.getBookIsbn());
+                        authorList.add(bookObject.getBookAuthor());
+                        nameList.add(bookObject.getBookName());
+                    }
                 }
             }
-            for(String i: isbnList) {
-                Log.v(TAG,"i: "+i);
-            }
+
             Log.v(TAG,"Completed");
         }
     }

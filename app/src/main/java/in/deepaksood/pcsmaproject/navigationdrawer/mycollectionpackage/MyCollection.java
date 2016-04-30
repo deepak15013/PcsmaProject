@@ -41,6 +41,8 @@ public class MyCollection extends Fragment {
 
     ShowBookAdapter adapter;
 
+    UserObject userObject;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +52,6 @@ public class MyCollection extends Fragment {
         Log.v(TAG,"emailId in My collection: "+emailId);
 
         bookObjects = new ArrayList<>();
-        new db().execute();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class MyCollection extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
-
+        new db().execute();
         return rootView;
 
     }
@@ -99,7 +100,8 @@ public class MyCollection extends Fragment {
 
             if(mapper != null) {
                 if(emailId != null) {
-                    UserObject userObject = mapper.load(UserObject.class, emailId);
+                    userObject = mapper.load(UserObject.class, emailId);
+                    Log.v(TAG,"user: "+userObject.getUserName());
                     bookObjects = userObject.getBookObjectSet();
                 }
             }
