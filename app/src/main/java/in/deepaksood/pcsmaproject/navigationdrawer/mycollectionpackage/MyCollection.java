@@ -1,7 +1,6 @@
 package in.deepaksood.pcsmaproject.navigationdrawer.mycollectionpackage;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -38,6 +36,7 @@ public class MyCollection extends Fragment {
     public static final String TAG = MyCollection.class.getSimpleName();
 
     private List<BookObject> bookObjects;
+    private List<BookObject> collectionBookObjects;
     private RecyclerView rv;
 
     private static String emailId;
@@ -58,6 +57,7 @@ public class MyCollection extends Fragment {
         Log.v(TAG,"emailId in My collection: "+emailId);
 
         bookObjects = new ArrayList<>();
+        collectionBookObjects = new ArrayList<>();
     }
 
     @Override
@@ -137,8 +137,19 @@ public class MyCollection extends Fragment {
     }
 
     private void initializeAdapter(){
-        adapter = new ShowBookAdapter(bookObjects);
-        rv.setAdapter(adapter);
+
+        for(BookObject i: bookObjects) {
+            if(i.isHaveBook()) {
+                collectionBookObjects.add(i);
+            }
+        }
+        if(collectionBookObjects.size() > 0) {
+            adapter = new ShowBookAdapter(collectionBookObjects, emailId);
+            rv.setAdapter(adapter);
+        }
+        else {
+            emptyCart.setVisibility(View.VISIBLE);
+        }
     }
 
 }

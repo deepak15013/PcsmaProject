@@ -254,7 +254,6 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_transactions:
-                Toast.makeText(MainActivity.this, "My Transactions", Toast.LENGTH_SHORT).show();
                 fragment = new TransactionsFragment();
                 ft.replace(R.id.content_frame, fragment, "TRANSACTIONSFRAGMENT");
                 ft.commit();

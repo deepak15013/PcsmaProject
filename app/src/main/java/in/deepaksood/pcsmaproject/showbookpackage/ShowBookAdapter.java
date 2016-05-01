@@ -128,7 +128,6 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
         personViewHolder.contactBookOwner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "contactBookOwner", Toast.LENGTH_SHORT).show();
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
                 shareIntent.setData(Uri.parse("mailto:"));
@@ -144,8 +143,6 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
         personViewHolder.showBookLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v(TAG,"position: "+position);
-                Toast.makeText(context, "showBookLocation", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ShowBookMapsActivity.class);
                 intent.putStringArrayListExtra("LOCATIONS", locations);
                 intent.putStringArrayListExtra("BOOK_NAMES", bookNames);

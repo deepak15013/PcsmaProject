@@ -25,7 +25,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp">
@@ -61,6 +61,17 @@
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold"
                 android:layout_marginTop="4dp"/>
+
+            <Button
+                android:id="@+id/btn_remove_from_collection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remove"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@color/colorPrimaryDark"
+                android:layout_gravity="end"
+                android:layout_marginRight="4dp"/>
 
         </LinearLayout>
 

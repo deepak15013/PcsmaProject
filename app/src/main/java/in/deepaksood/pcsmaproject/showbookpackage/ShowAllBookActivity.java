@@ -101,8 +101,10 @@ public class ShowAllBookActivity extends AppCompatActivity {
                 if(result != null) {
                     for(UserObject userObject: result) {
                         for(BookObject bookObject: userObject.getBookObjectSet()) {
-                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), bookObject.isBookRent(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
-                            cardObjects.add(cardObject);
+                            if(bookObject.isHaveBook()) {
+                                CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), bookObject.isBookRent(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
+                                cardObjects.add(cardObject);
+                            }
                         }
                     }
                 }

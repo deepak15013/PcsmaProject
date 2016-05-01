@@ -217,11 +217,13 @@ public class SearchBook extends Fragment implements View.OnClickListener{
                 if(result != null) {
                     for(UserObject userObject: result) {
                         for(BookObject bookObject: userObject.getBookObjectSet()) {
-                            isbnList.add(bookObject.getBookIsbn());
-                            authorList.add(bookObject.getBookAuthor());
-                            nameList.add(bookObject.getBookName());
-                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), bookObject.isBookRent(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
-                            cardObjects.add(cardObject);
+                            if(bookObject.isHaveBook()) {
+                                isbnList.add(bookObject.getBookIsbn());
+                                authorList.add(bookObject.getBookAuthor());
+                                nameList.add(bookObject.getBookName());
+                                CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), bookObject.isBookRent(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
+                                cardObjects.add(cardObject);
+                            }
                         }
                     }
                 }

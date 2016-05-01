@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    tools:context="in.deepaksood.pcsmaproject.mailpackage.RentBook">
+    tools:context=".mailpackage.LendBook">
 
     <ImageView
         android:layout_width="200dp"

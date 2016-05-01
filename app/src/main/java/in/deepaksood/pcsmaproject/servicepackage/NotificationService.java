@@ -1,18 +1,15 @@
 package in.deepaksood.pcsmaproject.servicepackage;
 
 import android.annotation.SuppressLint;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import in.deepaksood.pcsmaproject.mailpackage.AddBookForRent;
-import in.deepaksood.pcsmaproject.mailpackage.RentBook;
+import in.deepaksood.pcsmaproject.mailpackage.LendBook;
 
 @SuppressLint("NewApi")
 public class NotificationService extends NotificationListenerService {
@@ -51,7 +48,7 @@ public class NotificationService extends NotificationListenerService {
         if(pack.equals("com.google.android.gm") && text.contains("BookXchange"))
         {
             String arr[] = text.split(":");
-            Intent in=new Intent(getApplicationContext(),RentBook.class);
+            Intent in=new Intent(getApplicationContext(),LendBook.class);
             in.putExtra("EMAILID",arr[1]);
             in.putExtra("ISBN",arr[2]);
             in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
