@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -42,7 +43,7 @@ import in.deepaksood.pcsmaproject.bookaddpackage.CaptureActivityAnyOrientation;
 import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
 import in.deepaksood.pcsmaproject.loginpackage.LoginActivity;
-import in.deepaksood.pcsmaproject.navigationdrawer.ContactsFragment;
+import in.deepaksood.pcsmaproject.navigationdrawer.transactionspackage.TransactionsFragment;
 import in.deepaksood.pcsmaproject.navigationdrawer.mycollectionpackage.MyCollection;
 import in.deepaksood.pcsmaproject.navigationdrawer.searchbookpackage.SearchBook;
 import in.deepaksood.pcsmaproject.preferencemanagerpackage.PrefManager;
@@ -159,6 +160,7 @@ public class MainActivity extends AppCompatActivity
         Log.v(TAG,"onResume");
     }
 
+    boolean doubleBackToExitPressedOnce = false;
     @Override
     public void onBackPressed() {
         MyCollection myCollection = (MyCollection) getSupportFragmentManager().findFragmentByTag("MYCOLLECTIONFRAGMENT");
@@ -166,7 +168,24 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if(myCollection != null && myCollection.isVisible()) {
-            super.onBackPressed();
+
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce=false;
+                }
+            }, 2000);
+
+
         } else {
             displayView(R.id.nav_my_collection);
         }
@@ -234,10 +253,10 @@ public class MainActivity extends AppCompatActivity
                 addBookByScan();
                 break;
 
-            case R.id.nav_contacts:
-                Toast.makeText(MainActivity.this, "My contacts", Toast.LENGTH_SHORT).show();
-                fragment = new ContactsFragment();
-                ft.replace(R.id.content_frame, fragment, "CONTACTSFRAGMENT");
+            case R.id.nav_transactions:
+                Toast.makeText(MainActivity.this, "My Transactions", Toast.LENGTH_SHORT).show();
+                fragment = new TransactionsFragment();
+                ft.replace(R.id.content_frame, fragment, "TRANSACTIONSFRAGMENT");
                 ft.commit();
                 break;
 
@@ -258,7 +277,7 @@ public class MainActivity extends AppCompatActivity
                 shareIntent.setAction(Intent.ACTION_SEND);
                 shareIntent.setData(Uri.parse("mailto:"));
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "HEY CHECK IT OUT");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Hey I got this great app called MUSTER. Great for getting books from other people. Download now from Google Play Store");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Hey I got this great app called BookXchange. Great for getting books from other people. Download now from Google Play Store");
                 shareIntent.setType("text/plain");
                 startActivity(Intent.createChooser(shareIntent, "Share with"));
                 break;

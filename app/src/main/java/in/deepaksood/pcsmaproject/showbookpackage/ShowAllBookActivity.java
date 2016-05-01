@@ -33,6 +33,8 @@ public class ShowAllBookActivity extends AppCompatActivity {
     ShowBookAdapter adapter;
     private RecyclerView rvShowBook;
 
+    private String mainUserEmailId = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +44,9 @@ public class ShowAllBookActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("All Books");
+
+        mainUserEmailId = getIntent().getStringExtra("MAIN_USER_EMAIL_ID");
+        Log.v(TAG,"mainuseremailid: "+mainUserEmailId);
 
         rvShowBook = (RecyclerView)findViewById(R.id.rv_show_book);
 
@@ -96,7 +101,7 @@ public class ShowAllBookActivity extends AppCompatActivity {
                 if(result != null) {
                     for(UserObject userObject: result) {
                         for(BookObject bookObject: userObject.getBookObjectSet()) {
-                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
+                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), bookObject.isBookRent(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
                             cardObjects.add(cardObject);
                         }
                     }
@@ -110,7 +115,7 @@ public class ShowAllBookActivity extends AppCompatActivity {
     }
 
     private void initializeAdapter(){
-        adapter = new ShowBookAdapter(cardObjects);
+        adapter = new ShowBookAdapter(cardObjects, mainUserEmailId);
         rvShowBook.setAdapter(adapter);
     }
 

@@ -1,6 +1,7 @@
 package in.deepaksood.pcsmaproject.navigationdrawer.mycollectionpackage;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
@@ -43,6 +46,9 @@ public class MyCollection extends Fragment {
 
     UserObject userObject;
 
+    boolean collectionEmpty = false;
+    LinearLayout emptyCart;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +68,7 @@ public class MyCollection extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("My Collection");
 
         rv=(RecyclerView)rootView.findViewById(R.id.rv);
+        emptyCart = (LinearLayout) rootView.findViewById(R.id.ll_no_books);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(llm);
@@ -103,7 +110,10 @@ public class MyCollection extends Fragment {
                     userObject = mapper.load(UserObject.class, emailId);
                     Log.v(TAG,"user: "+userObject.getUserName());
                     bookObjects = userObject.getBookObjectSet();
-
+                    if(bookObjects == null) {
+                        Log.v(TAG,"Empty no books in collection");
+                        collectionEmpty = true;
+                    }
                 }
             }
 
@@ -116,7 +126,13 @@ public class MyCollection extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            initializeAdapter();
+            if(collectionEmpty) {
+                Log.v(TAG,"no books in collection");
+                emptyCart.setVisibility(View.VISIBLE);
+            } else {
+                emptyCart.setVisibility(View.INVISIBLE);
+                initializeAdapter();
+            }
         }
     }
 

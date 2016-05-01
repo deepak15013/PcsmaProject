@@ -10,6 +10,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +75,10 @@ public class AddBook extends AppCompatActivity {
     private String bookIsbn = "";
     private String bookPosterUrl = "";
 
+    private RadioGroup rgRentSale;
+    private RadioButton rbRentSaleId;
+    private boolean bookRent = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +97,8 @@ public class AddBook extends AppCompatActivity {
         publicationDate = (TextView) findViewById(R.id.publicationDate);
         binding = (TextView) findViewById(R.id.binding);
         productDescription = (TextView) findViewById(R.id.productDescription);
-        
+
+        rgRentSale = (RadioGroup) findViewById(R.id.rg_rent_sale);
         addBookButton = (Button) findViewById(R.id.addBook); 
 
 
@@ -133,16 +140,25 @@ public class AddBook extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Log.v(TAG,"title: "+title.getText());
                 if(! title.getText().toString().equalsIgnoreCase("Title")) {
+
+                    int selectedId = rgRentSale.getCheckedRadioButtonId();
+                    Log.v(TAG,"selectedId: "+selectedId);
+
+                    rbRentSaleId = (RadioButton) findViewById(selectedId);
+                    Log.v(TAG,"rb: "+rbRentSaleId.getText());
+
+                    if(rbRentSaleId.getText().toString().equals("For Sale")) {
+                        bookRent = false;
+                        Log.v(TAG,"for sale");
+                    }
+
                     saveBookData();
                     finish();
                 }
                 else {
                     Toast.makeText(AddBook.this, "Please scan a correct book", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
         
@@ -220,7 +236,8 @@ public class AddBook extends AppCompatActivity {
 
     BookObject bookObject;
     public void saveBookData() {
-        bookObject = new BookObject(bookName, bookAuthor, bookIsbn, bookPosterUrl);
+
+        bookObject = new BookObject(bookName, bookAuthor, bookIsbn, bookPosterUrl, bookRent, true);
         new db().execute();
 
     }

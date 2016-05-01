@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -14,12 +13,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".loginpackage.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
-
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -35,23 +32,19 @@
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".bookaddpackage.CaptureActivityAnyOrientation"
             android:screenOrientation="fullSensor"
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".bookaddpackage.AddBook"
             android:label="Scan Result"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".loginpackage.Registration"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".splashscreenpackage.SplashActivity"
             android:screenOrientation="portrait">
@@ -61,7 +54,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".showbookpackage.ShowAllBookActivity"
             android:screenOrientation="portrait" />
@@ -73,11 +65,26 @@
         <activity
             android:name=".mapactivitypackage.ShowBookMapsActivity"
             android:label="@string/title_activity_show_book_maps"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".showbookpackage.ShowSelectedBookActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".showbookpackage.ShowSelectedBookActivity"
             android:screenOrientation="portrait" />
 
+        <service
+            android:name=".servicepackage.NotificationService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".mailpackage.AddBookForRent"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".mailpackage.RentBook"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

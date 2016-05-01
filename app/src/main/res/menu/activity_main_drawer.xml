@@ -16,9 +16,9 @@
             android:title="Add Book" />
 
         <item
-            android:id="@+id/nav_contacts"
-            android:icon="@drawable/ic_people_black"
-            android:title="My Contacts" />
+            android:id="@+id/nav_transactions"
+            android:icon="@drawable/ic_transactions"
+            android:title="Transactions" />
         <item
             android:id="@+id/nav_log_out"
             android:icon="@drawable/ic_log_out"

@@ -18,14 +18,22 @@ public class BookObject {
     private String bookAuthor;
     private String bookIsbn;
     private String bookPosterUrl;
+    private boolean bookRent;
+
+    private boolean haveBook;
+
+    private RentUserModel rentUserModel;
+
 
     public BookObject() {}
 
-    public BookObject(String bookName, String bookAuthor, String bookIsbn, String bookPosterUrl) {
+    public BookObject(String bookName, String bookAuthor, String bookIsbn, String bookPosterUrl, boolean bookRent, boolean haveBook) {
         this.bookName = bookName;
         this.bookAuthor = bookAuthor;
         this.bookIsbn = bookIsbn;
         this.bookPosterUrl = bookPosterUrl;
+        this.bookRent = bookRent;
+        this.haveBook = haveBook;
     }
 
     @DynamoDBAttribute(attributeName = "BookName")
@@ -63,6 +71,33 @@ public class BookObject {
     public void setBookPosterUrl(String bookPosterUrl) {
         this.bookPosterUrl = bookPosterUrl;
     }
+
+    @DynamoDBAttribute(attributeName = "BookRent")
+    public boolean isBookRent() {
+        return bookRent;
+    }
+
+    public void setBookRent(boolean bookRent) {
+        this.bookRent = bookRent;
+    }
+
+    @DynamoDBAttribute(attributeName = "HaveBook")
+    public boolean isHaveBook() {
+        return haveBook;
+    }
+
+    public void setHaveBook(boolean haveBook) {
+        this.haveBook = haveBook;
+    }
+
+    /*@DynamoDBAttribute(attributeName = "RentUserModel")
+    public RentUserModel getRentUserModel() {
+        return rentUserModel;
+    }
+
+    public void setRentUserModel(RentUserModel rentUserModel) {
+        this.rentUserModel = rentUserModel;
+    }*/
 
     @Override
     public boolean equals(Object o) {

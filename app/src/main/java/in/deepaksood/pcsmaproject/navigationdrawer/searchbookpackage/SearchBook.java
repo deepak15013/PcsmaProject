@@ -34,6 +34,7 @@ import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.datamodelpackage.BookObject;
 import in.deepaksood.pcsmaproject.datamodelpackage.CardObject;
 import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
+import in.deepaksood.pcsmaproject.mainactivitypackage.MainActivity;
 import in.deepaksood.pcsmaproject.showbookpackage.ShowAllBookActivity;
 import in.deepaksood.pcsmaproject.showbookpackage.ShowSelectedBookActivity;
 
@@ -44,6 +45,8 @@ import in.deepaksood.pcsmaproject.showbookpackage.ShowSelectedBookActivity;
 public class SearchBook extends Fragment implements View.OnClickListener{
 
     private static final String TAG = SearchBook.class.getSimpleName();
+
+    String mainUserEmailId = "";
 
     AutoCompleteTextView etBookIsbn;
     AutoCompleteTextView etBookAuthor;
@@ -71,6 +74,7 @@ public class SearchBook extends Fragment implements View.OnClickListener{
         authorList = new ArrayList<>();
         nameList = new ArrayList<>();
         cardObjects = new ArrayList<>();
+
         new db().execute();
     }
 
@@ -80,6 +84,9 @@ public class SearchBook extends Fragment implements View.OnClickListener{
         View rootView = inflater.inflate(R.layout.search_book_fragment, container, false);
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Search Book");
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainUserEmailId = mainActivity.getUserEmailId();
 
         etBookIsbn = (AutoCompleteTextView) rootView.findViewById(R.id.et_book_isbn);
         etBookAuthor = (AutoCompleteTextView) rootView.findViewById(R.id.et_book_author);
@@ -155,6 +162,7 @@ public class SearchBook extends Fragment implements View.OnClickListener{
                     }
                     Intent intent = new Intent(getActivity(), ShowSelectedBookActivity.class);
                     intent.putExtra("HAVE_BOOK",(Serializable) haveBook);
+                    intent.putExtra("MAIN_USER_EMAIL_ID",mainUserEmailId);
                     startActivity(intent);
 
                 }
@@ -167,6 +175,7 @@ public class SearchBook extends Fragment implements View.OnClickListener{
             case R.id.btn_get_all:
                 Toast.makeText(getActivity(), "Get all Books", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), ShowAllBookActivity.class);
+                intent.putExtra("MAIN_USER_EMAIL_ID",mainUserEmailId);
                 startActivity(intent);
                 break;
 
@@ -211,7 +220,7 @@ public class SearchBook extends Fragment implements View.OnClickListener{
                             isbnList.add(bookObject.getBookIsbn());
                             authorList.add(bookObject.getBookAuthor());
                             nameList.add(bookObject.getBookName());
-                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
+                            CardObject cardObject = new CardObject(bookObject.getBookName(), bookObject.getBookAuthor(), bookObject.getBookIsbn(), bookObject.getBookPosterUrl(), bookObject.isBookRent(), userObject.getUserName(), userObject.getUserEmailId(), userObject.getUserProfilePictureUrl(), userObject.getUserCoverPictureUrl(), userObject.getUserContactNum(), userObject.getUserLocation());
                             cardObjects.add(cardObject);
                         }
                     }

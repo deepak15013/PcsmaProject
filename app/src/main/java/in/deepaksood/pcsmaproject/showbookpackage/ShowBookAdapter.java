@@ -24,6 +24,7 @@ import in.deepaksood.pcsmaproject.R;
 import in.deepaksood.pcsmaproject.datamodelpackage.BookObject;
 import in.deepaksood.pcsmaproject.datamodelpackage.CardObject;
 import in.deepaksood.pcsmaproject.datamodelpackage.UserObject;
+import in.deepaksood.pcsmaproject.mainactivitypackage.MainActivity;
 import in.deepaksood.pcsmaproject.mapactivitypackage.ShowBookMapsActivity;
 
 /**
@@ -39,6 +40,7 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
         TextView bookName;
         TextView bookAuthor;
         TextView bookIsbn;
+        TextView bookRent;
         TextView userName;
         TextView userEmailId;
         TextView userContactNum;
@@ -56,6 +58,7 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
             bookAuthor = (TextView)itemView.findViewById(R.id.tv_cv_show_book_author);
             bookIsbn = (TextView)itemView.findViewById(R.id.tv_cv_show_book_isbn);
             userName = (TextView) itemView.findViewById(R.id.tv_user_name);
+            bookRent = (TextView) itemView.findViewById(R.id.tv_cv_book_rent);
             userEmailId = (TextView) itemView.findViewById(R.id.tv_user_email_id);
             userContactNum = (TextView) itemView.findViewById(R.id.tv_user_contact_num);
 
@@ -71,9 +74,11 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
     ArrayList<String> locations;
     ArrayList<String> bookNames;
     ArrayList<String> userNames;
+    String mainUserEmailId;
 
-    ShowBookAdapter(List<CardObject> cardObjects){
+    ShowBookAdapter(List<CardObject> cardObjects, String mainUserEmailId){
         this.cardObjects = cardObjects;
+        this.mainUserEmailId = mainUserEmailId;
     }
 
     @Override
@@ -105,6 +110,13 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
         personViewHolder.bookName.setText(cardObjects.get(position).getBookName());
         personViewHolder.bookAuthor.setText(cardObjects.get(position).getBookAuthor());
         personViewHolder.bookIsbn.setText(cardObjects.get(position).getBookIsbn());
+        if(cardObjects.get(position).getBookRent()) {
+            personViewHolder.bookRent.setText("For Rent");
+        }
+        else {
+            personViewHolder.bookRent.setText("For Sale");
+        }
+
         personViewHolder.userName.setText(cardObjects.get(position).getUserName());
         personViewHolder.userName.setText(cardObjects.get(position).getUserName());
         personViewHolder.userEmailId.setText(cardObjects.get(position).getUserEmailId());
@@ -122,7 +134,7 @@ public class ShowBookAdapter extends RecyclerView.Adapter<ShowBookAdapter.BookVi
                 shareIntent.setData(Uri.parse("mailto:"));
                 Log.v(TAG,"mailto: "+cardObjects.get(position).getUserEmailId());
                 shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {cardObjects.get(position).getUserEmailId()});
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "BookXchange: Please help out");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "BookXchange:"+mainUserEmailId+":"+cardObjects.get(position).getBookIsbn());
                 shareIntent.putExtra(Intent.EXTRA_TEXT, "I want to have "+cardObjects.get(position).getBookName()+" book. Please lend me this book.");
                 shareIntent.setType("text/plain");
                 context.startActivity(Intent.createChooser(shareIntent, "Send request with"));

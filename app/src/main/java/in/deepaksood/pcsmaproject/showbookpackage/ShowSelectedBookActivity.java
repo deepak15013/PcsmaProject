@@ -26,6 +26,8 @@ public class ShowSelectedBookActivity extends AppCompatActivity {
     ShowBookAdapter adapter;
     private RecyclerView rvShowBook;
 
+    private String mainUserEmailId = "";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,8 @@ public class ShowSelectedBookActivity extends AppCompatActivity {
         cardObjects = new ArrayList<>();
 
         cardObjects = (List<CardObject>) getIntent().getSerializableExtra("HAVE_BOOK");
+        mainUserEmailId = getIntent().getStringExtra("MAIN_USER_EMAIL_ID");
+        Log.v(TAG,"mainuseremailId: "+mainUserEmailId);
 
         rvShowBook = (RecyclerView)findViewById(R.id.rv_show_book);
 
@@ -56,7 +60,7 @@ public class ShowSelectedBookActivity extends AppCompatActivity {
     }
 
     private void initializeAdapter(){
-        adapter = new ShowBookAdapter(cardObjects);
+        adapter = new ShowBookAdapter(cardObjects, mainUserEmailId);
         rvShowBook.setAdapter(adapter);
     }
 }

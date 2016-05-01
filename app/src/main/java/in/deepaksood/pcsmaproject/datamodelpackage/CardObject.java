@@ -11,6 +11,7 @@ public class CardObject implements Serializable{
     private String bookAuthor;
     private String bookIsbn;
     private String bookPosterUrl;
+    private Boolean bookRent;
     private String userName;
     private String userEmailId;
     private String userProfilePictureUrl;
@@ -18,11 +19,12 @@ public class CardObject implements Serializable{
     private String userContactNum;
     private String userLocation;
 
-    public CardObject(String bookName, String bookAuthor, String bookIsbn, String bookPosterUrl, String userName, String userEmailId, String userProfilePictureUrl, String userCoverPictureUrl, String userContactNum, String userLocation) {
+    public CardObject(String bookName, String bookAuthor, String bookIsbn, String bookPosterUrl, Boolean bookRent, String userName, String userEmailId, String userProfilePictureUrl, String userCoverPictureUrl, String userContactNum, String userLocation) {
         this.bookName = bookName;
         this.bookAuthor = bookAuthor;
         this.bookIsbn = bookIsbn;
         this.bookPosterUrl = bookPosterUrl;
+        this.bookRent = bookRent;
         this.userName = userName;
         this.userEmailId = userEmailId;
         this.userProfilePictureUrl = userProfilePictureUrl;
@@ -61,6 +63,14 @@ public class CardObject implements Serializable{
 
     public void setBookPosterUrl(String bookPosterUrl) {
         this.bookPosterUrl = bookPosterUrl;
+    }
+
+    public Boolean getBookRent() {
+        return bookRent;
+    }
+
+    public void setBookRent(Boolean bookRent) {
+        this.bookRent = bookRent;
     }
 
     public String getUserName() {
