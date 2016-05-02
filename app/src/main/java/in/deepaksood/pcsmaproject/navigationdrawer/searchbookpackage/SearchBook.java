@@ -173,7 +173,6 @@ public class SearchBook extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.btn_get_all:
-                Toast.makeText(getActivity(), "Get all Books", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), ShowAllBookActivity.class);
                 intent.putExtra("MAIN_USER_EMAIL_ID",mainUserEmailId);
                 startActivity(intent);

@@ -155,7 +155,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         findViewById(R.id.sign_in_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this, "sign-in", Toast.LENGTH_SHORT).show();
                 signIn();
             }
         });

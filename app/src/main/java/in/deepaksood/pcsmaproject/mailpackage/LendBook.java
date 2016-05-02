@@ -70,6 +70,7 @@ public class LendBook extends AppCompatActivity {
         assert button1 != null;
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                sendRejectMail();
                 finish();
                 moveTaskToBack(true);
 
@@ -103,8 +104,6 @@ public class LendBook extends AppCompatActivity {
 
             DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
 
-            Log.v(TAG,"mainUseremailId: "+mainUserEmailId);
-
             try {
                 if(mainUserEmailId != null && !mainUserEmailId.equals("")) {
                     userObject = mapper.load(UserObject.class, mainUserEmailId);
@@ -115,7 +114,6 @@ public class LendBook extends AppCompatActivity {
                             bookFound = true;
                         }
                     }
-
                     userObject.setBookObjectSet(bookObjects);
                     mapper.save(userObject);
                 }
@@ -141,6 +139,18 @@ public class LendBook extends AppCompatActivity {
         sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { emailId });
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Confirmation for book");
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Your request for book isbn: "+isbn+" has been accepted.");
+        startActivity(sendIntent);
+    }
+
+
+    public void sendRejectMail() {
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+        sendIntent.setType("plain/text");
+        sendIntent.setData(Uri.parse(emailId));
+        sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
+        sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { emailId });
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Book request rejected");
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Your request for book isbn: "+isbn+" has been rejected. Sorry but I need it now.");
         startActivity(sendIntent);
     }
 
